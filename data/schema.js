@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 
 let Schema = (db) => {
-
+	
 	let categoryType = new GraphQLObjectType({
 		name: 'Category',
 		fields: () => ({
@@ -25,8 +25,7 @@ let Schema = (db) => {
 					resolve: () => db.collection('categories').find({}).toArray()
 				}
 			})
-		})
-		//mutation
+		})		
 	});
 
 	return schema;
