@@ -6,12 +6,15 @@ import Main from "./containers/Main";
 
 ReactDOM.render(<Main />, document.getElementById('react'));
 
+//console.log('test');
+
 console.log(
-	Relay.QL`
-	{
-		categories {
-			_id
-		}
-	}
+	Relay.QL`	
+		query Test{
+			categories {
+				_id
+			}
+		}	
+	
 	`
 );

@@ -12,7 +12,7 @@ export default class Main extends React.Component {
   	render() {
 
   		return (
-  			<div>Test</div>
+  			<div>Test 2</div>
   		);	
   	}
  }
