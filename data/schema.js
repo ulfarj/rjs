@@ -7,7 +7,19 @@ import {
 } from 'graphql';
 
 let Schema = (db) => {
+
+	let store = {};
 	
+	let storeType = new GraphQLObjectType({
+		name: 'Store',	
+		fields: () => ({
+			categories: {
+				type: new GraphQLList(categoryType),					
+				resolve: () => db.collection('categories').find({}).toArray()
+			}
+		})
+	});		
+		
 	let categoryType = new GraphQLObjectType({
 		name: 'Category',
 		fields: () => ({
@@ -20,9 +32,9 @@ let Schema = (db) => {
 		query: new GraphQLObjectType({
 			name: 'Query',	
 			fields: () => ({
-				categories: {
-					type: new GraphQLList(categoryType),					
-					resolve: () => db.collection('categories').find({}).toArray()
+				store: {
+					type: storeType,					
+					resolve: () => store
 				}
 			})
 		})		

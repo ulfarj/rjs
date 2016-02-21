@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import Relay from "react-relay";
 
 export default class Main extends React.Component {
 	constructor(props) {
@@ -10,9 +11,29 @@ export default class Main extends React.Component {
   	}
 
   	render() {
+      let content = this.props.store.categories.map(category => {
+          return (<div>{category.name}</div>);
+      });
 
   		return (
-  			<div>Test 2</div>
+  			<div>
+          {content}
+        </div>
   		);	
   	}
  }
+
+ Main = Relay.createContainer(Main, {
+  fragments: {
+    store: () => Relay.QL`
+     fragment on Store {
+      categories {
+        _id,
+        name
+      }
+     }
+    `   
+  }
+ });
+
+ export default Main;
