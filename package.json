@@ -18,8 +18,11 @@
     "express-graphql": "^0.4.9",
     "fs": "0.0.2",
     "graphql": "^0.4.17",
+    "lodash": "^4.5.1",
     "mongodb": "^2.1.7",
     "react": "^0.14.7",
+    "react-bootstrap": "^0.28.3",
+    "react-bootstrap-table": "^1.5.2",
     "react-dom": "^0.14.7",
     "react-relay": "^0.7.0",
     "webpack": "^1.12.13"
