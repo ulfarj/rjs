@@ -19,5 +19,5 @@ ReactDOM.render(
 	<Relay.RootContainer
       Component={Main}
       route={new HomeRoute()} />, 
-	document.getElementById('react')
+	document.getElementById('app')
 );

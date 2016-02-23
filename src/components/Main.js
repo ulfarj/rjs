@@ -8,6 +8,7 @@ import _ from 'lodash';
 
 import Company from './Company';
 import Category from './Category'; 
+import CreateCompany from './CreateCompany';
 
 const styles = {
   input: {
@@ -30,13 +31,21 @@ const styles = {
 };
 
 export default class Main extends React.Component {
-	constructor(props) {
-	    super(props);
+	  constructor(props) {
+	    super(props);      
   	}
 
-    filterRow(e) {
+    filterRow = (e) => {
 
-    }    
+    };
+
+    openCreateCompanyModal = (e) => {      
+      this.props.relay.setVariables({showCreateCompanyModal: true});    
+    };    
+
+    closeCreateCompanyModal = (e) => {
+      this.props.relay.setVariables({showCreateCompanyModal: false}); 
+    };
 
   	render() {
       /*let content = this.props.store.categories.map(category => {
@@ -49,51 +58,68 @@ export default class Main extends React.Component {
 
   		return (
   			<div>
-           <Table striped bordered condensed hove responsive>
-                <thead>
-                  <tr>
-                    <th>Sölumaður</th>
-                    <th>Staða</th>
-                    <th>Nafn</th>                       
-                    <th>Kennitala</th>                                       
-                    <th>Heimilisfang</th>                   
-                    <th>Póstnúmer</th>
-                    <th>Sími</th>
-                    <th>Netfang</th>
-                    <th>Athugasemd</th>                                     
-                  </tr>
-                </thead>     
-                <tbody>
-                  <tr>                      
-                    <td>                        
-                      <select style={{border:0, height: 30}} onChange={this.filterRow} name="salesman">
-                        <option value="">Sýna allt</option>
-                          
-                      </select>
-                    </td>
-                    <td>
-                      <select style={{border:0, height: 30}} onChange={this.filterRow} name="status">
-                        <option value="">Sýna allt</option>
-                          
-                      </select>                        
-                    </td>
-                    <td><Input type="text" style={styles.input} onChange={this.filterRow} name="name" /></td>                      
-                    <td><Input type="text" style={styles.input} onChange={this.filterRow} name="ssn" /></td>
-                    <td><Input type="text" style={styles.input} onChange={this.filterRow} name="address" /></td>
-                    <td><Input type="text" style={styles.input} onChange={this.filterRow} name="postalCode" /></td>
-                    <td><Input type="text" style={styles.input} onChange={this.filterRow} name="phone" /></td>
-                    <td><Input type="text" style={styles.input} onChange={this.filterRow} name="email" /></td>
-                    <td><Input type="text" style={styles.input} onChange={this.filterRow} name="comment" /></td>
-                  </tr>                    
-                    {companies}                  
-                </tbody>
-              </Table>
+           <div style={styles.headerArea}>
+              <Button onClick={e => this.openCreateCompanyModal(e)} bsStyle="primary">Skrá verk</Button>
+
+              <Modal show={this.props.relay.variables.showCreateCompanyModal} onHide={e => this.closeCreateCompanyModal(e)} bsSize="lg">
+                <Modal.Header closeButton>
+                  <Modal.Title>Skrá verk</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <CreateCompany />
+                </Modal.Body>
+              </Modal>     
+           </div>
+           <div style={styles.gridArea}>
+             <Table striped bordered condensed hove responsive>
+                  <thead>
+                    <tr>
+                      <th>Sölumaður</th>
+                      <th>Staða</th>
+                      <th>Nafn</th>                       
+                      <th>Kennitala</th>                                       
+                      <th>Heimilisfang</th>                   
+                      <th>Póstnúmer</th>
+                      <th>Sími</th>
+                      <th>Netfang</th>
+                      <th>Athugasemd</th>                                     
+                    </tr>
+                  </thead>     
+                  <tbody>
+                    <tr>                      
+                      <td>                        
+                        <select style={{border:0, height: 30}} onChange={this.filterRow} name="salesman">
+                          <option value="">Sýna allt</option>
+                            
+                        </select>
+                      </td>
+                      <td>
+                        <select style={{border:0, height: 30}} onChange={this.filterRow} name="status">
+                          <option value="">Sýna allt</option>
+                            
+                        </select>                        
+                      </td>
+                      <td><Input type="text" style={styles.input} onChange={this.filterRow} name="name" /></td>                      
+                      <td><Input type="text" style={styles.input} onChange={this.filterRow} name="ssn" /></td>
+                      <td><Input type="text" style={styles.input} onChange={this.filterRow} name="address" /></td>
+                      <td><Input type="text" style={styles.input} onChange={this.filterRow} name="postalCode" /></td>
+                      <td><Input type="text" style={styles.input} onChange={this.filterRow} name="phone" /></td>
+                      <td><Input type="text" style={styles.input} onChange={this.filterRow} name="email" /></td>
+                      <td><Input type="text" style={styles.input} onChange={this.filterRow} name="comment" /></td>
+                    </tr>                    
+                      {companies}                  
+                  </tbody>
+                </Table>
+              </div>
         </div>
   		);	
   	}
  }
 
  Main = Relay.createContainer(Main, {
+  initialVariables: {
+    showCreateCompanyModal: false
+  },
   fragments: {
     store: () => Relay.QL`
      fragment on Store {
