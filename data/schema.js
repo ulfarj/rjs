@@ -4,7 +4,13 @@ import {
 	GraphQLList,
 	GraphQLInt,
 	GraphQLString,
+	GraphQLNonNull,
+	GraphQLID
 } from 'graphql';
+
+import {
+	mutationWithClientMutationId
+} from 'graphql-relay';
 
 let Schema = (db) => {
 
@@ -72,6 +78,23 @@ let Schema = (db) => {
 		})
 	});
 
+	let createCompanyMutation = mutationWithClientMutationId({
+		name: 'CreateCompany',
+
+		inputFields: {
+	    	name: { type: new GraphQLNonNull(GraphQLString) },
+	      	ssn: { type: new GraphQLNonNull(GraphQLString) },
+	    },	   
+		outputFields: {
+			company: {
+				type: companyType,
+				resolve: (obj) => obj.ops[0]
+			}
+		},
+		mutateAndGetPayload: (name, ssn) => {
+			return db.collection("companies").insertOne({name, ssn});
+		}
+	});
 
 	let schema = new GraphQLSchema({
 		query: new GraphQLObjectType({
@@ -83,6 +106,13 @@ let Schema = (db) => {
 				}
 			})
 		})		
+	});
+
+	mutation: new GraphQLObjectType({
+		name: 'Mutation',
+		fields: () => ({
+			createCompany: createCompanyMutation
+		})
 	});
 
 	return schema;
