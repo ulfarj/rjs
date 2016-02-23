@@ -82,8 +82,13 @@ let Schema = (db) => {
 		name: 'CreateCompany',
 
 		inputFields: {
+			ssn: { type: new GraphQLNonNull(GraphQLString) },
 	    	name: { type: new GraphQLNonNull(GraphQLString) },
-	      	ssn: { type: new GraphQLNonNull(GraphQLString) },
+	    	address: { type: GraphQLString },
+	    	postalCode: { type: GraphQLString },
+	    	phone: { type: GraphQLString },
+	    	email: { type: GraphQLString },
+	    	comment: { type: GraphQLString },	      	
 	    },	   
 		outputFields: {
 			company: {
@@ -91,8 +96,8 @@ let Schema = (db) => {
 				resolve: (obj) => obj.ops[0]
 			}
 		},
-		mutateAndGetPayload: (name, ssn) => {
-			return db.collection("companies").insertOne({name, ssn});
+		mutateAndGetPayload: ({name, ssn, address, postalCode, phone, email, comment}) => {			
+			return db.collection("companies").insertOne({"ssn": ssn, "name": name, "address": address, postalCode, phone, email, comment});
 		}
 	});
 
@@ -105,15 +110,17 @@ let Schema = (db) => {
 					resolve: () => store
 				}
 			})
-		})		
+		}),
+
+		mutation: new GraphQLObjectType({
+			name: 'Mutation',
+			fields: () => ({
+				createCompany: createCompanyMutation
+			})
+		})	
 	});
 
-	mutation: new GraphQLObjectType({
-		name: 'Mutation',
-		fields: () => ({
-			createCompany: createCompanyMutation
-		})
-	});
+	
 
 	return schema;
 };
