@@ -52,8 +52,8 @@ export default class Main extends React.Component {
           return (<Category key={category._id} category={category} />);
       });*/
 
-      let companies = this.props.store.companies.map(company => {
-          return (<Company key={company._id} company={company} />);
+      let companies = this.props.store.companyConnection.map(edge => {
+          return (<Company key={edge.node.id} company={edge.node} />);
       });
 
   		return (
@@ -123,13 +123,21 @@ export default class Main extends React.Component {
   fragments: {
     store: () => Relay.QL`
      fragment on Store {
-      categories {
-        _id,
-        ${Category.getFragment('category')}        
+      categoryConnection {
+        edges{
+          node{
+            id,
+            ${Category.getFragment('category')}        
+          }
+        }
       },
-      companies {
-        _id,
-        ${Company.getFragment('company')}        
+      companyConnection {
+        edges{
+          node{
+            id,
+            ${Company.getFragment('company')}
+          }        
+        }
       }
      }
     `   

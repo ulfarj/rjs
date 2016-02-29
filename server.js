@@ -12,6 +12,7 @@ app.use(express.static('public'));
 let url = 'mongodb://localhost:27017/ssdb';
 
 (async () => {
+  try {
 	let db = await MongoClient.connect(url);
 	let schema = Schema(db);
 
@@ -30,4 +31,7 @@ let url = 'mongodb://localhost:27017/ssdb';
       if (err) throw err;
       console.log("JSON schema created");
     });
+   } catch(e) {
+   	 console.log(e);
+   }
 })();

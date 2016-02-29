@@ -14,7 +14,11 @@ Category = Relay.createContainer(Category, {
 	fragments: {
 		category: () => Relay.QL`
 			fragment on Category{
-			  name		
+			  edges{
+			  	 node{
+			  	 	name
+			  	 }
+			  }			  
 			}	
 		`
 	}
