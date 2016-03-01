@@ -9,8 +9,6 @@ class CreateCompany extends React.Component {
 
   createCompany = (e) => {
 
-    console.log(this.props);
-
     Relay.Store.commitUpdate(
       new CreateCompanyMutation({
         name: this.refs.name.getValue(),
@@ -26,7 +24,6 @@ class CreateCompany extends React.Component {
   };
 
 	render() {
-		//let {company} = this.props;
 		return(
 			<div>
         

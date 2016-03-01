@@ -48,9 +48,9 @@ export default class Main extends React.Component {
     };
 
   	render() {
-      /*let content = this.props.store.categories.map(category => {
-          return (<Category key={category._id} category={category} />);
-      });*/
+      let categories = this.props.store.categoryConnection.edges.map(edge => {
+          return (<Category key={edge.node.id} category={edge.node} />);
+      });
 
       let companies = this.props.store.companyConnection.edges.map(edge => {
           return (<Company key={edge.node.id} company={edge.node} />);
