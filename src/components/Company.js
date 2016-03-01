@@ -15,12 +15,8 @@ class Company extends React.Component {
 Company = Relay.createContainer(Company, {
 	fragments: {
 		company: () => Relay.QL`
-			fragment on CompanyConnection{
-			  edges{
-			  	node{
-			  	  name		
-			  	}
-			  }			  
+			fragment on Company{			  
+				name					 			 
 			}	
 		`
 	}

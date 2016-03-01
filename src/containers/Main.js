@@ -8,31 +8,18 @@ export default class Main extends React.Component {
   	}
 
   	render() {
-      let content = this.props.store.categoryConnection.edges.map(edge => {
+      /*let content = this.props.store.categoryConnection.edges.map(edge => {
           return (<div>{edge.node.name}</div>);
-      });
+      });*/
 
   		return (
   			<div>
-          {content}
+          
         </div>
   		);	
   	}
  }
 
- Main = Relay.createContainer(Main, {
-  fragments: {
-    store: () => Relay.QL`
-     fragment on Store {
-      categoryConnection {
-        edges {
-          id,
-          name
-        }
-      }
-     }
-    `   
-  }
- });
+ 
 
  export default Main;

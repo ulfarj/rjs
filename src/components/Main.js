@@ -52,7 +52,9 @@ export default class Main extends React.Component {
           return (<Category key={category._id} category={category} />);
       });*/
 
-      let companies = this.props.store.companyConnection.map(edge => {
+      console.log(this.props.store);
+
+      let companies = this.props.store.companyConnection.edges.map(edge => {
           return (<Company key={edge.node.id} company={edge.node} />);
       });
 
@@ -118,12 +120,14 @@ export default class Main extends React.Component {
 
  Main = Relay.createContainer(Main, {
   initialVariables: {
-    showCreateCompanyModal: false
+    showCreateCompanyModal: false,
+    limit: 100,
+    query: ''
   },
   fragments: {
     store: () => Relay.QL`
      fragment on Store {
-      categoryConnection {
+      categoryConnection(first: $limit) {
         edges{
           node{
             id,
@@ -131,7 +135,7 @@ export default class Main extends React.Component {
           }
         }
       },
-      companyConnection {
+      companyConnection(first: $limit) {
         edges{
           node{
             id,

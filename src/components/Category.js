@@ -13,12 +13,8 @@ class Category extends React.Component {
 Category = Relay.createContainer(Category, {
 	fragments: {
 		category: () => Relay.QL`
-			fragment on Category{
-			  edges{
-			  	 node{
-			  	 	name
-			  	 }
-			  }			  
+			fragment on Category{			  
+				name			 		 
 			}	
 		`
 	}
