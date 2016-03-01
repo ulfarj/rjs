@@ -154,7 +154,7 @@ let Schema = (db) => {
 		        resolve: () => store
 		      }
 		},
-		mutateAndGetPayload: ({name, ssn, address, postalCode, phone, email, comment}) => {			
+		mutateAndGetPayload: ({name, ssn, address, postalCode, phone, email, comment}) => {					
 			return db.collection("companies").insertOne({"ssn": ssn, "name": name, "address": address, postalCode, phone, email, comment});
 		}
 	});

@@ -3,21 +3,27 @@ import Relay from "react-relay";
 import {Input, Button, Alert, DropDown} from 'react-bootstrap';
 import _ from 'lodash';
 
-//import CreateCompanyMutation from '../mutations/CreateCompanyMutation';
+import CreateCompanyMutation from '../mutations/CreateCompanyMutation';
 
 class CreateCompany extends React.Component {
 
-/*
   createCompany = (e) => {
 
-    Relay.Store.Update(
+    console.log(this.props);
+
+    Relay.Store.commitUpdate(
       new CreateCompanyMutation({
-        name: this.refs.name,
-        ssn: this.refs.ssn,
+        name: this.refs.name.getValue(),
+        ssn: this.refs.ssn.getValue(),
+        address: this.refs.address.getValue(), 
+        postalCode: this.refs.postalCode.getValue(),
+        phone: this.refs.phone.getValue(), 
+        email: this.refs.email.getValue(), 
+        comment: this.refs.comment.getValue(),
         store: this.props.store
-      });
+      })
     );
-  };*/
+  };
 
 	render() {
 		//let {company} = this.props;
