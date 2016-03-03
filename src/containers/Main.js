@@ -20,6 +20,25 @@ export default class Main extends React.Component {
   	}
  }
 
- 
+ Main = Relay.createContainer(Main, {
+  initialVariables: {
+    limit: 100,
+    query: ''
+  },
+  fragments: {
+    store: () => Relay.QL`
+     fragment on Store {
+      categoryConnection(first: $limit, query: $query) {
+        edges {
+          node {
+            id,
+            name
+          }
+        }
+      }
+     }
+    `   
+  }
+ });
 
  export default Main;

@@ -32,11 +32,18 @@ const styles = {
 
 export default class Main extends React.Component {
 	  constructor(props) {
-	    super(props);      
+	    super(props);
+
+      this.filter = _.debounce(this.filter, 300);         
   	}
 
     filterRow = (e) => {
+      
+      this.filter(e.target.value);
+    };
 
+    filter = (name) => {
+      this.props.relay.setVariables({name: name});
     };
 
     openCreateCompanyModal = (e) => {      
@@ -120,6 +127,7 @@ export default class Main extends React.Component {
   initialVariables: {
     showCreateCompanyModal: false,
     limit: 100,
+    name: '',
     query: ''
   },
   fragments: {
@@ -134,10 +142,10 @@ export default class Main extends React.Component {
           }
         }
       },
-      companyConnection(first: $limit) {
+      companyConnection(first: $limit, name: $name) {
         edges{
           node{
-            id,
+            id,                 
             ${Company.getFragment('company')}
           }        
         }

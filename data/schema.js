@@ -11,6 +11,7 @@ import {
 import {
 	globalIdField,
   	fromGlobalId,
+  	nodeDefinitions,
 	mutationWithClientMutationId,
 	connectionDefinitions,
   	connectionArgs,
@@ -19,7 +20,24 @@ import {
 
 let Schema = (db) => {
 
-	let store = {};
+	class Store {}
+    let store = new Store();
+
+    let nodeDefs = nodeDefinitions(
+	    (globalId) => {
+	      let {type} = fromGlobalId(globalId);
+	      if (type === 'Store') {
+	        return store
+	      }
+	      return null;
+	    },
+	    (obj) => {
+	      if (obj instanceof Store) {
+	        return storeType;
+	      }
+	      return null;
+	    }
+    );
 	
 	let storeType = new GraphQLObjectType({
 		name: 'Store',	
@@ -51,13 +69,50 @@ let Schema = (db) => {
 			},
 			companyConnection: {
 				type: companyConnection.connectionType,
-				args: connectionArgs,
-				resolve: (_, args) => connectionFromPromisedArray( 
-					db.collection('companies').find({}).toArray(),
-					args
-				)
+				args: {
+					...connectionArgs,
+					query: { type: GraphQLString },
+					name: { type: GraphQLString },
+					ssn: { type: GraphQLString },
+					email: { type: GraphQLString },
+					address: { type: GraphQLString },
+					postalCode: { type: GraphQLString },
+					comment: { type: GraphQLString }
+				},
+				resolve: (_, args) => { 
+					let findParams = {};
+
+					if(args.name) {
+						findParams.name = new RegExp(args.name, 'i');
+					}
+					if(args.ssn) {
+						findParams.ssn = new RegExp(args.ssn, 'i');
+					}
+					if(args.email) {
+						findParams.email = new RegExp(args.email, 'i');
+					}
+					if(args.address) {
+						findParams.address = new RegExp(args.address, 'i');
+					}
+					if(args.postalCode) {
+						findParams.postalCode = new RegExp(args.postalCode, 'i');
+					}
+					if(args.comment) {
+						findParams.comment = new RegExp(args.comment, 'i');
+					}
+
+					console.log(findParams);
+
+					return connectionFromPromisedArray( 
+						db.collection('companies')
+							.find(findParams)
+							.toArray(),
+						args
+					)
+				}
 			}
-		})
+		}),
+		interfaces: [nodeDefs.nodeInterface]
 	});
 
 	let companyType = new GraphQLObjectType({
@@ -163,6 +218,7 @@ let Schema = (db) => {
 		query: new GraphQLObjectType({
 			name: 'Query',	
 			fields: () => ({
+				node: nodeDefs.nodeField,
 				store: {
 					type: storeType,					
 					resolve: () => store
