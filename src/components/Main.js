@@ -47,36 +47,71 @@ export default class Main extends React.Component {
       this.props.relay.setVariables(filter);
     };
 
-    openCreateCompanyModal = (e) => {      
-      this.props.relay.setVariables({showCreateCompanyModal: true});    
-    };    
-
-    closeCreateCompanyModal = (e) => {
-      this.props.relay.setVariables({showCreateCompanyModal: false}); 
-    };
-
+  
   	render() {
-      let categories = this.props.store.categoryConnection.edges.map(edge => {
+
+      const { store, relay } = this.props;
+
+      let categories = store.categoryConnection.edges.map(edge => {
           return (<Category key={edge.node.id} category={edge.node} />);
       });
 
-      let companies = this.props.store.companyConnection.edges.map(edge => {
+      let companies = store.companyConnection.edges.map(edge => {
           return (<Company key={edge.node.id} company={edge.node} />);
       });
 
   		return (
   			<div>
            <div style={styles.headerArea}>
-              <Button onClick={e => this.openCreateCompanyModal(e)} bsStyle="primary">Skrá verk</Button>
+              <div style={{width: 120}}>
+                <Button
+                  bsStyle="primary"                        
+                  onClick={e => relay.setVariables({showSelectCategories: !relay.variables.showSelectCategories})}>
+                    Velja Verk
+                </Button>
+              </div>
+                
+              <div style={{width: 100}}> 
+                <Button 
+                  onClick={e => relay.setVariables({showCreateCompanyModal: true})} 
+                  bsStyle="primary">
+                    Skrá verk
+                </Button>
+                <Modal 
+                  show={relay.variables.showCreateCompanyModal} 
+                  onHide={e => relay.setVariables({showCreateCompanyModal: false})} 
+                  bsSize="lg">
+                  <Modal.Header closeButton>
+                    <Modal.Title>Skrá verk</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <CreateCompany store={store} />
+                  </Modal.Body>
+                </Modal>
+              </div>   
 
-              <Modal show={this.props.relay.variables.showCreateCompanyModal} onHide={e => this.closeCreateCompanyModal(e)} bsSize="lg">
-                <Modal.Header closeButton>
-                  <Modal.Title>Skrá verk</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <CreateCompany store={this.props.store} />
-                </Modal.Body>
-              </Modal>     
+              <div>
+                <Modal 
+                  show={relay.variables.showEditModal} 
+                  onHide={e => relay.setVariables({showEditModal: false})} 
+                  bsSize="lg">
+                  <Modal.Header closeButton>
+                    <Modal.Title>Verk</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    
+                  </Modal.Body>
+                </Modal>
+              </div>
+
+              <div style={{paddingLeft: '40', width: 300}}>
+                <label>
+                  <h4>
+                    Fjöldi færslna: 
+                  </h4>
+                </label>
+              </div>  
+
            </div>
            <div style={styles.gridArea}>
              <Table striped bordered condensed hove responsive>
@@ -127,6 +162,8 @@ export default class Main extends React.Component {
  Main = Relay.createContainer(Main, {
   initialVariables: {
     showCreateCompanyModal: false,
+    showEditModal: false,
+    showSelectCategories: false,
     limit: 100,
     name: '',
     ssn: '',
