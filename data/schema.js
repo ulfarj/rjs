@@ -70,11 +70,11 @@ let Schema = (db) => {
 			companyConnection: {
 				type: companyConnection.connectionType,
 				args: {
-					...connectionArgs,
-					query: { type: GraphQLString },
+					...connectionArgs,									
 					name: { type: GraphQLString },
 					ssn: { type: GraphQLString },
 					email: { type: GraphQLString },
+					phone: { type: GraphQLString },
 					address: { type: GraphQLString },
 					postalCode: { type: GraphQLString },
 					comment: { type: GraphQLString }
@@ -84,6 +84,7 @@ let Schema = (db) => {
 
 					if(args.name) {
 						findParams.name = new RegExp(args.name, 'i');
+						console.log(args.name + 'name');	
 					}
 					if(args.ssn) {
 						findParams.ssn = new RegExp(args.ssn, 'i');
@@ -91,8 +92,12 @@ let Schema = (db) => {
 					if(args.email) {
 						findParams.email = new RegExp(args.email, 'i');
 					}
+					if(args.phone) {
+						findParams.phone = new RegExp(args.phone, 'i');
+					}
 					if(args.address) {
 						findParams.address = new RegExp(args.address, 'i');
+						console.log(args.address + 'address');
 					}
 					if(args.postalCode) {
 						findParams.postalCode = new RegExp(args.postalCode, 'i');

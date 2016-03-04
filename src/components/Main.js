@@ -38,12 +38,13 @@ export default class Main extends React.Component {
   	}
 
     filterRow = (e) => {
-      
-      this.filter(e.target.value);
+      var filter = Object();
+      filter[e.target.name] = e.target.value;
+      this.filter(filter);
     };
 
-    filter = (name) => {
-      this.props.relay.setVariables({name: name});
+    filter = (filter) => {      
+      this.props.relay.setVariables(filter);
     };
 
     openCreateCompanyModal = (e) => {      
@@ -128,7 +129,12 @@ export default class Main extends React.Component {
     showCreateCompanyModal: false,
     limit: 100,
     name: '',
-    query: ''
+    ssn: '',
+    email: '',
+    phone: '',
+    address: '',
+    postalCode: '',
+    comment: ''
   },
   fragments: {
     store: () => Relay.QL`
@@ -142,7 +148,8 @@ export default class Main extends React.Component {
           }
         }
       },
-      companyConnection(first: $limit, name: $name) {
+      companyConnection(first: $limit, name: $name, ssn: $ssn, email: $email, phone: $phone, 
+        address: $address, postalCode: $postalCode, comment: $comment) {
         edges{
           node{
             id,                 
