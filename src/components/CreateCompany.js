@@ -1,12 +1,18 @@
-import React from "react";
-import Relay from "react-relay";
+import React from 'react';
+import Relay from 'react-relay';
 import {Input, Button, Alert, DropDown} from 'react-bootstrap';
 import _ from 'lodash';
+import ToggleDisplay from 'react-toggle-display';
 
 import CreateCompanyMutation from '../mutations/CreateCompanyMutation';
 import Category from './Category';
 
 class CreateCompany extends React.Component {
+
+  componentWillMount(){
+    const { store, relay } = this.props;  
+    relay.setVariables({salesman: store.salesmanConnection.edges[0].node.id});
+  }
 
   createCompany = (e) => {
 
@@ -24,23 +30,39 @@ class CreateCompany extends React.Component {
     );
   };
 
+  changeSalesman = (e) => {        
+     this.props.relay.setVariables({salesman: e.target.value});
+  };
+
 	render() {
 
     const { store, relay } = this.props;
-
+      
     let salesmen = store.salesmanConnection.edges.map(edge => {      
       return (<option value={edge.node.id} key={edge.node.id}>{edge.node.name}</option>);
     });
 
     let categories = store.categoryConnection.edges.map(edge => {
       return (<Category key={edge.node.id} category={edge.node} />);
+    })
+
+    let categoriesBySalesman = store.salesmanConnection.edges.map(edge => {      
+      return(
+          <ToggleDisplay show={relay.variables.salesman === edge.node.id} key={edge.node.id}>
+            <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
+              { categories }
+            </div>
+          </ToggleDisplay>
+        );
     });
 
 		return(
 			<div>
 
+          {categoriesBySalesman}
+
           <div style={{display: 'flex', flexDirection: 'row',}}>
-            <Input type="select" ref="salesman" label="Sölumaður" style={{width: 250}}>
+            <Input type="select" ref="salesman" label="Sölumaður" onChange={this.changeSalesman} style={{width: 250}}>
               {salesmen}
             </Input>                                     
           </div>
@@ -69,5 +91,13 @@ class CreateCompany extends React.Component {
 		);
 	}
 }
+
+CreateCompany = Relay.createContainer(CreateCompany, {
+  initialVariables: {
+    salesman: ''
+  },
+  fragments: {    
+  }
+});
 
 export default CreateCompany;
