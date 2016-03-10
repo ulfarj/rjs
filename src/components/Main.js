@@ -47,6 +47,9 @@ export default class Main extends React.Component {
       this.props.relay.setVariables(filter);
     };
 
+    changeCategory = (e) => {
+
+    };
   
   	render() {
 
@@ -110,9 +113,29 @@ export default class Main extends React.Component {
                     Fjöldi færslna: 
                   </h4>
                 </label>
-              </div>  
-
+              </div>
            </div>
+
+            <div>
+              <div>
+                <Panel collapsible expanded={relay.variables.showSelectCategories}>
+                  <Grid>
+                    <Row>
+                      <Col>
+                        <Input 
+                          type="checkbox" 
+                          label='Sýna alla flokka' 
+                          value='showall' 
+                          checked={relay.variables.showAllCategories} 
+                          onClick={e => this.changeCategory(e)} />
+                      </Col>                      
+                      {categories}
+                    </Row>
+                  </Grid>
+                </Panel>
+              </div>
+           </div>
+
            <div style={styles.gridArea}>
              <Table striped bordered condensed hove responsive>
                   <thead>
@@ -164,6 +187,7 @@ export default class Main extends React.Component {
     showCreateCompanyModal: false,
     showEditModal: false,
     showSelectCategories: false,
+    showAllCategories: true,
     limit: 100,
     name: '',
     ssn: '',
@@ -192,6 +216,14 @@ export default class Main extends React.Component {
             id,                 
             ${Company.getFragment('company')}
           }        
+        }
+      },
+      salesmanConnection(first: 100) {
+        edges{
+          node{
+            id,
+            name       
+          }
         }
       }
      }

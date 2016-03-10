@@ -1,0 +1,63 @@
+body{
+	padding: 10px;
+}
+
+.table .form-group {
+	margin: 0;
+}
+
+.table .form-control {
+	height: 30px;
+	padding: 0;
+}
+
+.modal-body .form-group
+{
+	padding-right: 10px;
+}
+
+.modal-body .form-group .checkbox
+{
+	margin: 0!important;
+}
+
+.popover-content .form-group
+{
+	margin: 0 0 5px 0 !important;
+}
+
+.popover-content .form-group .checkbox
+{
+	margin: 0!important;
+}
+
+.tool-bar .col-lg-8
+{
+	display: none;
+}
+
+.table-footer-pagination .col-md-6
+{
+
+}
+
+.panel{
+	margin: 0;
+	border: 0;
+}
+
+.panel-body
+{
+	padding:0;
+}
+
+.panel-body .form-group
+{
+	float: left;
+	padding-right: 15px;
+	margin: 0;
+}
+
+.panel-body .container {
+	margin:0;
+}

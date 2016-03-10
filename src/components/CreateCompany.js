@@ -4,6 +4,7 @@ import {Input, Button, Alert, DropDown} from 'react-bootstrap';
 import _ from 'lodash';
 
 import CreateCompanyMutation from '../mutations/CreateCompanyMutation';
+import Category from './Category';
 
 class CreateCompany extends React.Component {
 
@@ -24,8 +25,25 @@ class CreateCompany extends React.Component {
   };
 
 	render() {
+
+    const { store, relay } = this.props;
+
+    let salesmen = store.salesmanConnection.edges.map(edge => {      
+      return (<option value={edge.node.id} key={edge.node.id}>{edge.node.name}</option>);
+    });
+
+    let categories = store.categoryConnection.edges.map(edge => {
+      return (<Category key={edge.node.id} category={edge.node} />);
+    });
+
 		return(
 			<div>
+
+          <div style={{display: 'flex', flexDirection: 'row',}}>
+            <Input type="select" ref="salesman" label="Sölumaður" style={{width: 250}}>
+              {salesmen}
+            </Input>                                     
+          </div>
         
 				  <div style={{display: 'flex', flexDirection: 'row',}}>
             <Input type="text" label="Nafn" placeholder="Nafn" ref="name" style={{width: 250}} />
