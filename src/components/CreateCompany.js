@@ -16,6 +16,16 @@ class CreateCompany extends React.Component {
 
   createCompany = (e) => {
 
+    var onSuccess = (response) => {
+      console.log(response);
+      console.log('Mutation successful!');
+    };
+
+    var onFailure = (transaction) => {
+      //var error = transaction.getError() || new Error('Mutation failed.');
+      console.log(transaction.getError());
+    };
+
     Relay.Store.commitUpdate(
       new CreateCompanyMutation({
         name: this.refs.name.getValue(),
@@ -26,8 +36,8 @@ class CreateCompany extends React.Component {
         email: this.refs.email.getValue(), 
         comment: this.refs.comment.getValue(),
         store: this.props.store
-      })
-    );
+      }), {onSuccess, onFailure}
+    );    
   };
 
   changeSalesman = (e) => {        
@@ -37,6 +47,13 @@ class CreateCompany extends React.Component {
 	render() {
 
     const { store, relay } = this.props;
+
+    //console.log('store');   
+    console.log(this.props.store);
+
+    let companies = store.companyConnection.edges.map(edge => {
+      return (<div>{edge.node.id}</div>)
+    });
       
     let salesmen = store.salesmanConnection.edges.map(edge => {      
       return (<option value={edge.node.id} key={edge.node.id}>{edge.node.name}</option>);
@@ -96,7 +113,20 @@ CreateCompany = Relay.createContainer(CreateCompany, {
   initialVariables: {
     salesman: ''
   },
-  fragments: {    
+  fragments: {
+    /*store: () => Relay.QL`
+     fragment on Store {
+      id,
+      companyConnection(first: 100) {
+        edges{
+          node{
+            id,
+            name            
+          }
+        }
+      }
+    }
+    ` */     
   }
 });
 

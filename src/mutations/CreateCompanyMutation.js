@@ -28,8 +28,7 @@ class CreateCompanyMutation extends Relay.Mutation {
 	    `;
   	}
 
-  	getConfigs() {
-  		console.log(this.props.store);
+  /*	getConfigs() {  		
 	    return [{
 	      type: 'RANGE_ADD',
 	      parentName: 'store',
@@ -37,11 +36,24 @@ class CreateCompanyMutation extends Relay.Mutation {
 	      connectionName: 'companyConnection',
 	      edgeName: 'companyEdge',
 	      rangeBehaviors: {
-	        '': 'prepend',
+	        'orderby(newest)': 'append',	        
 	      },
 	    }]
-	}
+	}*/
 
+	 getConfigs() {
+	    return [{
+	     type: 'REQUIRED_CHILDREN',
+		 children: [
+		    Relay.QL`
+		      fragment on CreateCompanyPayload {
+		   	    companyEdge
+		      }
+		    `
+		  ]
+	    }];
+	  }
+	 
   	getOptimisticResponse() {  		
 	    return {
 	      companyEdge: {

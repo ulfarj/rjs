@@ -67,6 +67,14 @@ let Schema = (db) => {
 					args
 				)				
 			},
+			statusConnection: {
+				type: statusConnection.connectionType,
+				args: connectionArgs,
+				resolve: (_, args) => connectionFromPromisedArray(
+					db.collection('statuses').find({}).toArray(),
+					args
+				)				
+			},
 			companyConnection: {
 				type: companyConnection.connectionType,
 				args: {
@@ -105,9 +113,7 @@ let Schema = (db) => {
 					if(args.comment) {
 						findParams.comment = new RegExp(args.comment, 'i');
 					}
-
-					console.log(findParams);
-
+					
 					return connectionFromPromisedArray( 
 						db.collection('companies')
 							.find(findParams)
@@ -192,6 +198,23 @@ let Schema = (db) => {
 		nodeType: salesmanType
 	});
 
+	let statusType = new GraphQLObjectType({
+		name: 'Status',
+		fields: () => ({
+			id: {
+		        type: new GraphQLNonNull(GraphQLID),
+		        resolve: (obj) => obj._id
+		    },
+			name: {type: GraphQLString},
+			color: {type: GraphQLString}
+		})
+	});
+
+	let statusConnection = connectionDefinitions({
+		name: 'Status',
+		nodeType: statusType
+	});
+
 	let createCompanyMutation = mutationWithClientMutationId({
 		name: 'CreateCompany',
 
@@ -204,10 +227,11 @@ let Schema = (db) => {
 	    	email: { type: GraphQLString },
 	    	comment: { type: GraphQLString },	      	
 	    },	   
-		outputFields: {
+		outputFields: {			
+
 			companyEdge: {
 				type: companyConnection.edgeType,
-				resolve: (obj) => ({ node: obj.ops[0], cursor: obj.insertedId })				
+				resolve: (obj) => ({ node: obj.ops[0], cursor: obj.insertedId })							
 			},
 		    store: {
 		        type: storeType,
@@ -216,6 +240,27 @@ let Schema = (db) => {
 		},
 		mutateAndGetPayload: ({name, ssn, address, postalCode, phone, email, comment}) => {					
 			return db.collection("companies").insertOne({"ssn": ssn, "name": name, "address": address, postalCode, phone, email, comment});
+		}
+	});
+
+	let createSaleMutation = mutationWithClientMutationId({
+		name: 'CreateSale',
+
+		inputFields: {
+			companyId: { type: new GraphQLNonNull(GraphQLString) },
+			salesmanId: { type: new GraphQLNonNull(GraphQLString) },
+			categoryId: { type: new GraphQLNonNull(GraphQLString) },
+			statusId: { type: new GraphQLNonNull(GraphQLString) }
+		},
+		outputFields: {
+			companyEdge: {
+				type: saleConnection.edgeType,
+				resolve: (obj) => ({ node: obj.ops[0], cursor: obj.insertedId })
+			},
+			store: {
+				type: storeType,
+				resolve: () => store
+			}
 		}
 	});
 
@@ -234,9 +279,11 @@ let Schema = (db) => {
 		mutation: new GraphQLObjectType({
 			name: 'Mutation',
 			fields: () => ({
-				createCompany: createCompanyMutation
+				createCompany: createCompanyMutation,
+				createSale: createSaleMutation
 			})
-		})	
+		})
+
 	});
 
 	

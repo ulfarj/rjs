@@ -225,6 +225,15 @@ export default class Main extends React.Component {
             name       
           }
         }
+      },
+      statusConnection(first: 100)
+      {
+        edges{
+          node{
+            id, 
+            name
+          }
+        }
       }
      }
     `   
