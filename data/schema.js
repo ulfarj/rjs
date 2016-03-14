@@ -253,7 +253,7 @@ let Schema = (db) => {
 			statusId: { type: new GraphQLNonNull(GraphQLString) }
 		},
 		outputFields: {
-			companyEdge: {
+			saleEdge: {
 				type: saleConnection.edgeType,
 				resolve: (obj) => ({ node: obj.ops[0], cursor: obj.insertedId })
 			},
@@ -261,6 +261,11 @@ let Schema = (db) => {
 				type: storeType,
 				resolve: () => store
 			}
+		},
+		mutateAndGetPayload: ({companyId, salesmanId, categoryId, statusId}) => {					
+			return db.collection("sales").insertOne(
+				{"companyId": companyId, "salesmanId": salesmanId, "categoryId": categoryId, "statusId": statusId 
+			});
 		}
 	});
 

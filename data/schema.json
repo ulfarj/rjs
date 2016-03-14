@@ -1586,7 +1586,7 @@
           "description": null,
           "fields": [
             {
-              "name": "companyEdge",
+              "name": "saleEdge",
               "description": null,
               "args": [],
               "type": {

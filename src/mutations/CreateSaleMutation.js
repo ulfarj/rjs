@@ -25,22 +25,22 @@ class CreateSaleMutation extends Relay.Mutation {
 	    `;
   	}
 
-  	getConfigs() {  	
+  	getConfigs() {
 	    return [{
-	      type: 'RANGE_ADD',
-	      parentName: 'store',
-	      parentID: this.props.store.id,
-	      connectionName: 'saleConnection',
-	      edgeName: 'saleEdge',
-	      rangeBehaviors: {
-	        '': 'prepend',
-	      },
-	    }]
-	}
+	     type: 'REQUIRED_CHILDREN',
+		 children: [
+		    Relay.QL`
+		      fragment on CreateSalePayload {
+		   	    saleEdge
+		      }
+		    `
+		  ]
+	    }];
+	 }
 
   	getOptimisticResponse() {  		
 	    return {
-	      companyEdge: {
+	      saleEdge: {
 	        node: {
 	          companyId: this.props.companyId,
 			  salesmanId: this.props.salesmanId,
@@ -53,4 +53,4 @@ class CreateSaleMutation extends Relay.Mutation {
 
 }
 
-export default CreateCompanyMutation;
+export default CreateSaleMutation;

@@ -1,10 +1,12 @@
 import React from 'react';
 import Relay from 'react-relay';
-import {Input, Button, Alert, DropDown} from 'react-bootstrap';
+import {Input, Button, Alert, DropDown, Col} from 'react-bootstrap';
 import _ from 'lodash';
 import ToggleDisplay from 'react-toggle-display';
 
 import CreateCompanyMutation from '../mutations/CreateCompanyMutation';
+import CreateSaleMutation from '../mutations/CreateSaleMutation';
+
 import Category from './Category';
 
 class CreateCompany extends React.Component {
@@ -17,7 +19,9 @@ class CreateCompany extends React.Component {
   createCompany = (e) => {
 
     var onSuccess = (response) => {
-      console.log(response);
+
+      var companyId = response.createCompany.companyEdge.cursor;
+      this.createSales(companyId);
       console.log('Mutation successful!');
     };
 
@@ -40,27 +44,83 @@ class CreateCompany extends React.Component {
     );    
   };
 
+  createSales = (companyId) => {
+    
+    const { relay } = this.props;
+
+    const statusId = '56b6196af7ec61807b2fdffb';
+
+    relay.variables.categories.map(function(category){
+      this.createSale(companyId, category.salesmanId, category.categoryId, statusId);
+    }.bind(this));
+  };
+
+  createSale = (companyId, salesmanId, categoryId, statusId) => {
+
+    var onSuccess = (response) => {      
+      console.log('Mutation sales successful!');
+    };
+
+    var onFailure = (transaction) => {
+      //var error = transaction.getError() || new Error('Mutation failed.');
+      console.log(transaction.getError());
+    };
+
+    Relay.Store.commitUpdate(
+      new CreateSaleMutation({
+        companyId: companyId,
+        salesmanId: salesmanId,
+        categoryId: categoryId,
+        statusId: statusId,         
+        store: this.props.store
+      }), {onSuccess, onFailure}
+    );
+
+  };
+
   changeSalesman = (e) => {        
      this.props.relay.setVariables({salesman: e.target.value});
+  };
+
+  changeCategory = (e) => {
+    
+    const { relay } = this.props;
+
+    var categories = relay.variables.categories;
+
+    var category = {
+      'categoryId': e.target.value,  
+      'salesmanId': relay.variables.salesman,      
+    };
+
+    if(e.target.checked) {
+      categories.push(category);
+    }
+    else{
+      categories.splice(_.findIndex(categories, category), 1);    
+    }
+
+    relay.setVariables({categories, categories});
   };
 
 	render() {
 
     const { store, relay } = this.props;
-
-    //console.log('store');   
-    console.log(this.props.store);
-
-    let companies = store.companyConnection.edges.map(edge => {
-      return (<div>{edge.node.id}</div>)
-    });
       
     let salesmen = store.salesmanConnection.edges.map(edge => {      
       return (<option value={edge.node.id} key={edge.node.id}>{edge.node.name}</option>);
     });
 
     let categories = store.categoryConnection.edges.map(edge => {
-      return (<Category key={edge.node.id} category={edge.node} />);
+      //return (<Category key={edge.node.id} category={edge.node} />);
+
+      return(        
+            <Input                    
+              type="checkbox"
+              label={edge.node.name}
+              value={edge.node.id}               
+              onClick={this.changeCategory}  />                  
+        );
     })
 
     let categoriesBySalesman = store.salesmanConnection.edges.map(edge => {      
@@ -111,7 +171,8 @@ class CreateCompany extends React.Component {
 
 CreateCompany = Relay.createContainer(CreateCompany, {
   initialVariables: {
-    salesman: ''
+    salesman: '',
+    categories: []
   },
   fragments: {
     /*store: () => Relay.QL`
