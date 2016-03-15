@@ -1,6 +1,7 @@
 import {
 	GraphQLSchema,
 	GraphQLObjectType,
+	GraphQLInputObjectType,
 	GraphQLList,
 	GraphQLInt,
 	GraphQLString,
@@ -58,15 +59,7 @@ let Schema = (db) => {
 					db.collection('salesmen').find({}).toArray(),
 					args
 				) 						
-			},
-			saleConnection: {
-				type: saleConnection.connectionType,
-				args: connectionArgs,
-				resolve: (_, args) => connectionFromPromisedArray(
-					db.collection('sales').find({}).toArray(),
-					args
-				)				
-			},
+			},			
 			statusConnection: {
 				type: statusConnection.connectionType,
 				args: connectionArgs,
@@ -74,6 +67,46 @@ let Schema = (db) => {
 					db.collection('statuses').find({}).toArray(),
 					args
 				)				
+			},
+			saleConnection: {
+				type: saleConnection.connectionType,
+				args: {
+					...connectionArgs,														
+					salesmen: { type: new GraphQLList(GraphQLString) },
+					categories: { type: new GraphQLList(GraphQLString) },
+					statuses: { type: new GraphQLList(GraphQLString) }					
+				},
+				resolve: (_, args) => { 
+					let findParams = {};
+
+					//console.log(categories);
+
+					/*db.bios.find(
+					   {
+					      _id: { $in: [ 5,  ObjectId("507c35dd8fada716c89d0013") ] }
+					   }
+					)*/
+
+					/*if(args.companyId) {
+						findParams.companyId = new RegExp(args.companyId, 'i');
+					}*/
+					/*if(args.salesmanId) {
+						findParams.salesmanId = new RegExp(args.salesmanId, 'i');
+					}
+					if(args.categoryId) {
+						findParams.categoryId = new RegExp(args.categoryId, 'i');
+					}
+					if(args.companyId) {
+						findParams.statusId = new RegExp(args.statusId, 'i');
+					}*/
+
+					return connectionFromPromisedArray(
+						db.collection('sales')
+							.find(findParams)
+							.toArray(),
+						args
+					)
+				}				
 			},
 			companyConnection: {
 				type: companyConnection.connectionType,
@@ -91,8 +124,7 @@ let Schema = (db) => {
 					let findParams = {};
 
 					if(args.name) {
-						findParams.name = new RegExp(args.name, 'i');
-						console.log(args.name + 'name');	
+						findParams.name = new RegExp(args.name, 'i');						
 					}
 					if(args.ssn) {
 						findParams.ssn = new RegExp(args.ssn, 'i');
@@ -104,8 +136,7 @@ let Schema = (db) => {
 						findParams.phone = new RegExp(args.phone, 'i');
 					}
 					if(args.address) {
-						findParams.address = new RegExp(args.address, 'i');
-						console.log(args.address + 'address');
+						findParams.address = new RegExp(args.address, 'i');						
 					}
 					if(args.postalCode) {
 						findParams.postalCode = new RegExp(args.postalCode, 'i');
@@ -155,9 +186,10 @@ let Schema = (db) => {
 		        type: new GraphQLNonNull(GraphQLID),
 		        resolve: (obj) => obj._id
 		    },
-			company_id: {type: GraphQLString},
-			salesman_id: {type: GraphQLString},
-			category_id: {type: GraphQLString}
+		    companyId: {type: GraphQLString},
+			categoryId: {type: GraphQLString},
+			salesmanId: {type: GraphQLString},			
+			statusId: {type: GraphQLString}
 		})
 	});
 

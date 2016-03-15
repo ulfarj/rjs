@@ -14,7 +14,7 @@ class Category extends React.Component {
                 label={category.name}
                 value={category.id} 
                 //checked={categories.indexOf(category.id) >= 0}
-                onClick={e => this.changeCategory(category.id, e)}  />
+                onClick={this.props.onClick}  />
              </Col>
 		);
 	}

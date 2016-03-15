@@ -48,7 +48,25 @@ export default class Main extends React.Component {
     };
 
     changeCategory = (e) => {
+      //this.props.relay.setVariables({categoryId: e.target.value});
+      //console.log(e.target.value);
 
+      const { relay } = this.props;
+
+      var categories = relay.variables.categories;
+
+      var category = {
+        'categoryId': e.target.value,              
+      };
+
+      if(e.target.checked) {
+        categories.push(category);
+      }
+      else{
+        categories.splice(_.findIndex(categories, category), 1);    
+      }
+
+      relay.setVariables({categories, categories});      
     };
   
   	render() {
@@ -56,7 +74,7 @@ export default class Main extends React.Component {
       const { store, relay } = this.props;
 
       let categories = store.categoryConnection.edges.map(edge => {
-          return (<Category key={edge.node.id} category={edge.node} />);
+          return (<Category key={edge.node.id} category={edge.node} onClick={this.changeCategory} />);
       });
 
       let companies = store.companyConnection.edges.map(edge => {
@@ -195,7 +213,10 @@ export default class Main extends React.Component {
     phone: '',
     address: '',
     postalCode: '',
-    comment: ''
+    comment: '',        
+    salesmen: [],
+    categories: [],
+    statuses
   },
   fragments: {
     store: () => Relay.QL`
@@ -233,6 +254,17 @@ export default class Main extends React.Component {
             id, 
             name
           }
+        }
+      },
+      salesConnection(first: 100, salesmen: $salesmen, categories: $categories, statuses: $statuses)
+      {
+        edges
+        {
+          node {
+            id,
+            categoryId,
+            statusId
+          }          
         }
       }
      }
