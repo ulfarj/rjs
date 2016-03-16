@@ -79,30 +79,11 @@ let Schema = (db) => {
 				resolve: (_, args) => { 
 					let findParams = {};
 
-					//console.log(categories);
-
-					/*db.bios.find(
-					   {
-					      _id: { $in: [ 5,  ObjectId("507c35dd8fada716c89d0013") ] }
-					   }
-					)*/
-
-					/*if(args.companyId) {
-						findParams.companyId = new RegExp(args.companyId, 'i');
-					}*/
-					/*if(args.salesmanId) {
-						findParams.salesmanId = new RegExp(args.salesmanId, 'i');
-					}
-					if(args.categoryId) {
-						findParams.categoryId = new RegExp(args.categoryId, 'i');
-					}
-					if(args.companyId) {
-						findParams.statusId = new RegExp(args.statusId, 'i');
-					}*/
-
+					console.log(args.categories);				
+				
 					return connectionFromPromisedArray(
 						db.collection('sales')
-							.find(findParams)
+							.find({categoryId: { $in: args.categories }})
 							.toArray(),
 						args
 					)
@@ -170,7 +151,8 @@ let Schema = (db) => {
 			postalCode: {type: GraphQLString},
 			phone: {type: GraphQLString},
 			email: {type: GraphQLString},
-			comment: {type: GraphQLString}
+			comment: {type: GraphQLString},
+			categories: {type: categoryType }
 		})
 	});	
 

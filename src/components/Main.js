@@ -9,6 +9,7 @@ import _ from 'lodash';
 import Company from './Company';
 import Category from './Category'; 
 import CreateCompany from './CreateCompany';
+import EditCompany from './EditCompany';
 
 const styles = {
   input: {
@@ -37,6 +38,16 @@ export default class Main extends React.Component {
       this.filter = _.debounce(this.filter, 300);         
   	}
 
+    componentWillMount(){
+      const { store, relay } = this.props;
+
+      let categories = store.categoryConnection.edges.map(edge => {
+        return edge.node.id;
+      });
+
+      relay.setVariables({categories, categories}); 
+    }
+
     filterRow = (e) => {
       var filter = Object();
       filter[e.target.name] = e.target.value;
@@ -47,9 +58,7 @@ export default class Main extends React.Component {
       this.props.relay.setVariables(filter);
     };
 
-    changeCategory = (e) => {
-      //this.props.relay.setVariables({categoryId: e.target.value});
-      //console.log(e.target.value);
+    changeCategory = (e) => {      
 
       const { relay } = this.props;
 
@@ -66,7 +75,18 @@ export default class Main extends React.Component {
         categories.splice(_.findIndex(categories, category), 1);    
       }
 
-      relay.setVariables({categories, categories});      
+      relay.setVariables({categories, categories}); 
+
+      //console.log(categories);   
+    };
+
+    editCompany = (companyId) => {   
+
+      const { relay } = this.props;         
+
+      relay.setVariables({showEditModal: true});  
+      //relay.setVariables({selectedCompany: companyId});        
+      //console.log(this.props);
     };
   
   	render() {
@@ -74,12 +94,20 @@ export default class Main extends React.Component {
       const { store, relay } = this.props;
 
       let categories = store.categoryConnection.edges.map(edge => {
-          return (<Category key={edge.node.id} category={edge.node} onClick={this.changeCategory} />);
+          return (
+            <Category 
+              key={edge.node.id} 
+              category={edge.node} 
+              onClick={this.changeCategory}
+              checked={relay.variables.categories.indexOf(edge.node.id) >= 0} />
+            );
       });
 
       let companies = store.companyConnection.edges.map(edge => {
-          return (<Company key={edge.node.id} company={edge.node} />);
+          return (<Company key={edge.node.id} company={edge.node} onClick={this.editCompany} />);
       });
+
+      //console.log(relay.variables.categories);
 
   		return (
   			<div>
@@ -120,7 +148,7 @@ export default class Main extends React.Component {
                     <Modal.Title>Verk</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    
+                    <EditCompany /> 
                   </Modal.Body>
                 </Modal>
               </div>
@@ -173,14 +201,12 @@ export default class Main extends React.Component {
                     <tr>                      
                       <td>                        
                         <select style={{border:0, height: 30}} onChange={this.filterRow} name="salesman">
-                          <option value="">Sýna allt</option>
-                            
+                          <option value="">Sýna allt</option>                            
                         </select>
                       </td>
                       <td>
                         <select style={{border:0, height: 30}} onChange={this.filterRow} name="status">
-                          <option value="">Sýna allt</option>
-                            
+                          <option value="">Sýna allt</option>                            
                         </select>                        
                       </td>
                       <td><Input type="text" style={styles.input} onChange={this.filterRow} name="name" /></td>                      
@@ -206,6 +232,7 @@ export default class Main extends React.Component {
     showEditModal: false,
     showSelectCategories: false,
     showAllCategories: true,
+    selectedCompany: '',
     limit: 100,
     name: '',
     ssn: '',
@@ -216,7 +243,7 @@ export default class Main extends React.Component {
     comment: '',        
     salesmen: [],
     categories: [],
-    statuses
+    statuses: []
   },
   fragments: {
     store: () => Relay.QL`
@@ -256,7 +283,7 @@ export default class Main extends React.Component {
           }
         }
       },
-      salesConnection(first: 100, salesmen: $salesmen, categories: $categories, statuses: $statuses)
+      saleConnection(first: 100, salesmen: $salesmen, categories: $categories, statuses: $statuses)
       {
         edges
         {

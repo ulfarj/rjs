@@ -13,6 +13,7 @@ class Category extends React.Component {
                 type="checkbox"
                 label={category.name}
                 value={category.id} 
+                checked={this.props.checked}
                 //checked={categories.indexOf(category.id) >= 0}
                 onClick={this.props.onClick}  />
              </Col>
