@@ -101,10 +101,13 @@ export default class Main extends React.Component {
       const { store, relay } = this.props;
 
       let categories = store.categoryConnection.edges.map(edge => {
+
+          //console.log(edge.node);
+
           return (
             <Category 
               key={edge.node.id} 
-              category={edge.node} 
+              categoryx={edge.node} 
               onClick={this.changeCategory}
               checked={relay.variables.categories.indexOf(edge.node.id) >= 0} />
             );
@@ -113,9 +116,7 @@ export default class Main extends React.Component {
       let companies = store.companyConnection.edges.map(edge => {
           return (<Company key={edge.node.id} company={edge.node} onClick={this.editCompany} />);
       });
-
-      //console.log(relay.variables.categories);
-
+      
   		return (
   			<div>
            <div style={styles.headerArea}>
@@ -155,7 +156,7 @@ export default class Main extends React.Component {
                     <Modal.Title>Verk</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <EditCompany store={store} companyId={relay.variables.editCompanyId}/> 
+                    <EditCompany store={store} categories={store.categoryConnection.edges} companyId={relay.variables.editCompanyId}/> 
                   </Modal.Body>
                 </Modal>
               </div>
@@ -256,11 +257,12 @@ export default class Main extends React.Component {
     store: () => Relay.QL`
      fragment on Store {
       id,
+      ${EditCompany.getFragment('store')},
       categoryConnection(first: $limit) {
         edges{
           node{
-            id,
-            name    
+            id,            
+            ${Category.getFragment('categoryx')},          
           }
         }
       },

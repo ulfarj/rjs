@@ -11,7 +11,10 @@ class EditCompany extends React.Component {
 
 		const { store, relay } = this.props;
 
+		console.log(this.props.categories);
+
 	    let categories = store.categoryConnection.edges.map(edge => {
+	    	//conso
 	    	return (
 	        	<option key={edge.node.id} value={edge.node.id}>{edge.node.name}</option>
 	         );
@@ -128,36 +131,31 @@ class EditCompany extends React.Component {
 	}
 }
 
-/*
+
 EditCompany = Relay.createContainer(EditCompany, {
 	fragments: {
-		category: () => Relay.QL`
-			fragment on Category{
-				id,			  
-				name			 		 
+		store: () => Relay.QL`
+			fragment on Store{
+				categoryConnection(first: 100) {
+					edges{
+			          node{
+			            id,            
+			            name,          
+			          }
+			        }
+				},
+				salesmanConnection(first: 100) {
+			        edges{
+			          node{
+			            id,
+			            name       
+			          }
+			        }
+			     }
+
 			}	
 		`
 	}
-});*/
-
-/*
-EditCompany = Relay.createContainer(EditCompany, {
-  initialVariables: {  
-  },
-  fragments: {
-    store: () => Relay.QL`
-     fragment on Store {     
-      categoryConnection(first: 100) {
-        edges{
-          node{
-            id,
-            name            
-          }
-        }
-      }
-    }
-    `      
-  }
-});*/
+});
 
 export default EditCompany;

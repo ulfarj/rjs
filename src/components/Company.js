@@ -17,10 +17,10 @@ class Company extends React.Component {
 				<td></td>
 				<td>
 					<svg width="100" height="16">
-					 	<circle cx="10" cy="8" r="6" stroke="black" stroke-width="1" fill="yellow"><title>Vinnsla</title></circle>
-					 	<circle cx="25" cy="8" r="6" stroke="black" stroke-width="1" fill="red"><title>Nei</title></circle>
-					 	<circle cx="40" cy="8" r="6" stroke="black" stroke-width="1" fill="blue"><title>Já</title></circle>
-					 	<circle cx="55" cy="8" r="6" stroke="black" stroke-width="1" fill="green"><title>Athuga</title></circle>
+					 	<circle cx="10" cy="8" r="6" stroke="black" strokeWidth="1" fill="yellow"><title>Vinnsla</title></circle>
+					 	<circle cx="25" cy="8" r="6" stroke="black" strokeWidth="1" fill="red"><title>Nei</title></circle>
+					 	<circle cx="40" cy="8" r="6" stroke="black" strokeWidth="1" fill="blue"><title>Já</title></circle>
+					 	<circle cx="55" cy="8" r="6" stroke="black" strokeWidth="1" fill="green"><title>Athuga</title></circle>
 					</svg> 					
 				</td>
 				<td onClick={e => this.onClick(company.id)}>{company.name}</td>

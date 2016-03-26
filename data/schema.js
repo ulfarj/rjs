@@ -160,10 +160,6 @@ let Schema = (db) => {
 					let findParams = {};
 					findParams.companyId = new RegExp(obj._id, 'i');
 
-					console.log(
-						db.collection('companies').find(findParams).toArray()													
-						);
-
 					return connectionFromPromisedArray( 
 						db.collection('sales')
 							.find(findParams)
