@@ -53,6 +53,8 @@ class CreateCompany extends React.Component {
     relay.variables.categories.map(function(category){
       this.createSale(companyId, category.salesmanId, category.categoryId, statusId);
     }.bind(this));
+
+    this.props.onCreate();
   };
 
   createSale = (companyId, salesmanId, categoryId, statusId) => {
@@ -112,15 +114,7 @@ class CreateCompany extends React.Component {
     });
 
     let categories = store.categoryConnection.edges.map(edge => {
-      //return (<Category key={edge.node.id} category={edge.node} />);
-
-      return(        
-            <Input                    
-              type="checkbox"
-              label={edge.node.name}
-              value={edge.node.id}               
-              onClick={this.changeCategory}  />                  
-        );
+      return (<Category key={edge.node.id} category={edge.node} onClick={this.onClick} />);
     })
 
     let categoriesBySalesman = store.salesmanConnection.edges.map(edge => {      

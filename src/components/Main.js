@@ -84,9 +84,16 @@ export default class Main extends React.Component {
 
       const { relay } = this.props;         
 
-      relay.setVariables({showEditModal: true});  
-      //relay.setVariables({selectedCompany: companyId});        
+      relay.setVariables({showEditModal: true}); 
+
+      relay.setVariables({editCompanyId: companyId});        
       //console.log(this.props);
+    };
+
+    onCreateCompany = () => {
+      const { relay } = this.props;
+
+      relay.setVariables({showCreateCompanyModal: false});
     };
   
   	render() {
@@ -116,7 +123,7 @@ export default class Main extends React.Component {
                 <Button
                   bsStyle="primary"                        
                   onClick={e => relay.setVariables({showSelectCategories: !relay.variables.showSelectCategories})}>
-                    Velja Verk
+                    Velja flokka
                 </Button>
               </div>
                 
@@ -124,17 +131,17 @@ export default class Main extends React.Component {
                 <Button 
                   onClick={e => relay.setVariables({showCreateCompanyModal: true})} 
                   bsStyle="primary">
-                    Skrá verk
+                    Skrá fyrirtæki
                 </Button>
                 <Modal 
                   show={relay.variables.showCreateCompanyModal} 
                   onHide={e => relay.setVariables({showCreateCompanyModal: false})} 
                   bsSize="lg">
                   <Modal.Header closeButton>
-                    <Modal.Title>Skrá verk</Modal.Title>
+                    <Modal.Title>Skrá fyrirtæki</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <CreateCompany store={store} />
+                    <CreateCompany store={store} onCreate={this.onCreateCompany} />
                   </Modal.Body>
                 </Modal>
               </div>   
@@ -148,7 +155,7 @@ export default class Main extends React.Component {
                     <Modal.Title>Verk</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <EditCompany /> 
+                    <EditCompany store={store} companyId={relay.variables.editCompanyId}/> 
                   </Modal.Body>
                 </Modal>
               </div>
@@ -230,9 +237,9 @@ export default class Main extends React.Component {
   initialVariables: {
     showCreateCompanyModal: false,
     showEditModal: false,
-    showSelectCategories: false,
+    showSelectCategories: true,
     showAllCategories: true,
-    selectedCompany: '',
+    editCompanyId: '',
     limit: 100,
     name: '',
     ssn: '',
@@ -253,7 +260,7 @@ export default class Main extends React.Component {
         edges{
           node{
             id,
-            ${Category.getFragment('category')}        
+            name    
           }
         }
       },

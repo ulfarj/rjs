@@ -78,9 +78,7 @@ let Schema = (db) => {
 				},
 				resolve: (_, args) => { 
 					let findParams = {};
-
-					console.log(args.categories);				
-				
+												
 					return connectionFromPromisedArray(
 						db.collection('sales')
 							.find({categoryId: { $in: args.categories }})
@@ -99,7 +97,7 @@ let Schema = (db) => {
 					phone: { type: GraphQLString },
 					address: { type: GraphQLString },
 					postalCode: { type: GraphQLString },
-					comment: { type: GraphQLString }
+					comment: { type: GraphQLString },					
 				},
 				resolve: (_, args) => { 
 					let findParams = {};
@@ -152,7 +150,29 @@ let Schema = (db) => {
 			phone: {type: GraphQLString},
 			email: {type: GraphQLString},
 			comment: {type: GraphQLString},
-			categories: {type: categoryType }
+			categories: {type: categoryType },
+			sales: {
+				type: saleConnection.connectionType,
+				args: {
+					...connectionArgs
+				},
+				resolve: (obj, args) => {					
+					let findParams = {};
+					findParams.companyId = new RegExp(obj._id, 'i');
+
+					console.log(
+						db.collection('companies').find(findParams).toArray()													
+						);
+
+					return connectionFromPromisedArray( 
+						db.collection('sales')
+							.find(findParams)
+							.toArray(),
+							args
+						)
+
+				}
+			}
 		})
 	});	
 

@@ -6,10 +6,26 @@ import _ from 'lodash';
 
 
 class EditCompany extends React.Component {
+
 	render() {
+
+		const { store, relay } = this.props;
+
+	    let categories = store.categoryConnection.edges.map(edge => {
+	    	return (
+	        	<option key={edge.node.id} value={edge.node.id}>{edge.node.name}</option>
+	         );
+	    });
+
+	    let salesmen = store.salesmanConnection.edges.map(edge => {      
+	      return (	      		
+	      		<option key={edge.node.id} value={edge.node.id}>{edge.node.name}</option>	      		
+	      	);
+	    });
+
 		return(
 			<Tabs defaultActiveKey={1}>
-	          <Tab eventKey={1} title="Tab 1">
+	          <Tab eventKey={1} title="Fyrirtæki">
 	            <div style={{paddingTop: '10px'}}>
 	              <div style={{display: 'flex', flexDirection: 'row',}}>
 	                <Input type="text" label="Nafn" placeholder="Nafn" ref="name" style={{width: 250}} />
@@ -29,7 +45,18 @@ class EditCompany extends React.Component {
 	              </div>
 	            </div>
 	          </Tab>
-	          <Tab eventKey={2} title="Tab 2">
+	          <Tab eventKey={2} title="Verk">
+	          	<div style={{display: 'flex', flexDirection: 'row', paddingTop: '10px'}}>
+	          		<Input type="select" label="Sölumaður">
+			      		{salesmen}
+			      	</Input>
+		          	<Input type="select" label="Flokkur">
+			      		{categories}
+			      	</Input>	
+		      	</div>
+
+	          </Tab>
+	          <Tab eventKey={3} title="Samningur">
 	            <div style={{paddingTop: '10px'}}>              
 	               <div style={{display: 'flex', flexDirection: 'row',}}>
 	                    <Input type="select" ref="salesman" label="Sölumaður" onChange={this.changeSalesman} style={{width: 280}}>
@@ -74,18 +101,16 @@ class EditCompany extends React.Component {
 
 	                </div>
 
-
 	                <div style={{display: 'flex', flexDirection: 'row',}}>
 	                <Input type="text" label="Birting í appi" placeholder="Birting í appi" ref="dateofsale" style={{width: 140}} />  
 	                <Input type="text" label="Aðgangur að appi sendur" placeholder="Aðgangur að appi sendur" ref="dateofsale" style={{width: 200}} />  
 	                <Input type="text" label="Staðsetning" placeholder="Staðsetning" ref="dateofsale" style={{width: 140}} />  
-	                <Input type="text" label="Flokkur" placeholder="Flokkur" ref="dateofsale" style={{width: 140}} />  
-	            
+	                <Input type="text" label="Flokkur" placeholder="Flokkur" ref="dateofsale" style={{width: 140}} />  	            
 
 	                </div>
 	            </div>        
 	          </Tab>
-	          <Tab eventKey={3} title="Tab 3">
+	          <Tab eventKey={4} title="Lögfræðimerking">
 	            <div style={{paddingTop: '10px'}}>              
 	               <div>
 	                <Input type="checkbox" label="Lögfræðimerkt" ref="dateofsale" style={{}} />  
@@ -102,5 +127,37 @@ class EditCompany extends React.Component {
 		);
 	}
 }
+
+/*
+EditCompany = Relay.createContainer(EditCompany, {
+	fragments: {
+		category: () => Relay.QL`
+			fragment on Category{
+				id,			  
+				name			 		 
+			}	
+		`
+	}
+});*/
+
+/*
+EditCompany = Relay.createContainer(EditCompany, {
+  initialVariables: {  
+  },
+  fragments: {
+    store: () => Relay.QL`
+     fragment on Store {     
+      categoryConnection(first: 100) {
+        edges{
+          node{
+            id,
+            name            
+          }
+        }
+      }
+    }
+    `      
+  }
+});*/
 
 export default EditCompany;
