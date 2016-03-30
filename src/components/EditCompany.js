@@ -4,17 +4,47 @@ import {Table, Input, Fade, Button, Well, ButtonToolbar, Overlay, Popover, Panel
 	Grid, Row, Col, Tabs, Tab} from 'react-bootstrap';
 import _ from 'lodash';
 
+import CreateSaleMutation from '../mutations/CreateSaleMutation';
+
 
 class EditCompany extends React.Component {
 
+	componentWillMount(){
+		//const { companyId, relay } = this.props;  
+	    //relay.setVariables({companyId: companyId});
+	}
+
+	createSale() {
+		const { relay, companyId } = this.props;
+
+		var onSuccess = (response) => {      
+	      console.log('Mutation sales successful!');
+	    };
+
+	    var onFailure = (transaction) => {
+	      //var error = transaction.getError() || new Error('Mutation failed.');
+	      console.log(transaction.getError());
+	    };
+
+
+	    Relay.Store.commitUpdate(
+	      new CreateSaleMutation({
+	        companyId: companyId,
+	        salesmanId: this.refs.salesman.getValue(),
+	        categoryId: this.refs.category.getValue(),
+	        statusId: this.refs.status.getValue(),         
+	        store: this.props.store
+	      }), {onSuccess, onFailure}
+	    );
+	};
+
 	render() {
 
-		const { store, relay } = this.props;
+		const { store, relay, companyId } = this.props;
 
-		console.log(this.props.categories);
+		console.log(companyId);
 
-	    let categories = store.categoryConnection.edges.map(edge => {
-	    	//conso
+	    let categories = store.categoryConnection.edges.map(edge => {	    	
 	    	return (
 	        	<option key={edge.node.id} value={edge.node.id}>{edge.node.name}</option>
 	         );
@@ -24,6 +54,28 @@ class EditCompany extends React.Component {
 	      return (	      		
 	      		<option key={edge.node.id} value={edge.node.id}>{edge.node.name}</option>	      		
 	      	);
+	    });
+
+	    let statuses = store.statusConnection.edges.map(edge => {
+	      return (
+	      		<option key={edge.node.id} value={edge.node.id}>{edge.node.name}</option>
+	      	);
+	    });
+	   
+	    let sales = store.saleConnection.edges.map(edge => {
+	    	return (
+	    		<div style={{display: 'flex', flexDirection: 'row', paddingTop: '10px'}}>
+	          		<Input type="select" value={edge.node.salesmanId}>
+			      		{salesmen}
+			      	</Input>
+		          	<Input type="select" value={edge.node.categoryId}>
+			      		{categories}
+			      	</Input>
+			      	<Input type="select" value={edge.node.statusId}>
+			      		{statuses}
+			      	</Input>	
+		      	</div>
+	    		);
 	    });
 
 		return(
@@ -50,13 +102,28 @@ class EditCompany extends React.Component {
 	          </Tab>
 	          <Tab eventKey={2} title="Verk">
 	          	<div style={{display: 'flex', flexDirection: 'row', paddingTop: '10px'}}>
-	          		<Input type="select" label="Sölumaður">
+	          		<Input type="select" label="Sölumaður" ref="salesman">
 			      		{salesmen}
 			      	</Input>
-		          	<Input type="select" label="Flokkur">
+		          	<Input type="select" label="Flokkur" ref="category">
 			      		{categories}
+			      	</Input>
+			      	<Input type="select" label="Staða" ref="status">
+			      		{statuses}
 			      	</Input>	
+
+			      	<div style={{paddingTop: '22px'}}>
+				      	<Button 
+		                  onClick={e => this.createSale(e)} 
+		                  bsStyle="primary" style={{height:'35px'}}>
+		                    Skrá sölu
+		                </Button>
+	                </div>
 		      	</div>
+
+		      	<div>
+			    	{sales}
+			    </div>
 
 	          </Tab>
 	          <Tab eventKey={3} title="Samningur">
@@ -133,6 +200,9 @@ class EditCompany extends React.Component {
 
 
 EditCompany = Relay.createContainer(EditCompany, {
+	initialVariables: {
+		companyId: ''
+	},
 	fragments: {
 		store: () => Relay.QL`
 			fragment on Store{
@@ -151,7 +221,35 @@ EditCompany = Relay.createContainer(EditCompany, {
 			            name       
 			          }
 			        }
-			     }
+			     },
+			     statusConnection(first: 100) {
+			        edges{
+			          node{
+			            id, 
+			            name
+			          }
+			        }
+			      },
+			      companyConnection(first: 1, id: $companyId) {
+			        edges{
+			          node{
+			            id,            		
+			            name			            	            
+			          }        
+			        }
+			      },
+			      saleConnection(first: 100)
+			      {
+			        edges
+			        {
+			          node {
+			            id,
+			            salesmanId,			            
+			            categoryId,
+			            statusId
+			          }          
+			        }
+			      }
 
 			}	
 		`

@@ -71,17 +71,23 @@ let Schema = (db) => {
 			saleConnection: {
 				type: saleConnection.connectionType,
 				args: {
-					...connectionArgs,														
+					...connectionArgs,	
+					companyId: { type: GraphQLString },													
 					salesmen: { type: new GraphQLList(GraphQLString) },
 					categories: { type: new GraphQLList(GraphQLString) },
 					statuses: { type: new GraphQLList(GraphQLString) }					
 				},
 				resolve: (_, args) => { 
 					let findParams = {};
+
+					if(args.companyId){
+						findParams.companyId = new RegExp(args.companyId, 'i');
+					}
 												
 					return connectionFromPromisedArray(
 						db.collection('sales')
-							.find({categoryId: { $in: args.categories }})
+							//.find({categoryId: { $in: args.categories }})
+							.find(findParams)
 							.toArray(),
 						args
 					)
@@ -90,7 +96,8 @@ let Schema = (db) => {
 			companyConnection: {
 				type: companyConnection.connectionType,
 				args: {
-					...connectionArgs,									
+					...connectionArgs,
+					id: { type: GraphQLString },									
 					name: { type: GraphQLString },
 					ssn: { type: GraphQLString },
 					email: { type: GraphQLString },
@@ -101,6 +108,10 @@ let Schema = (db) => {
 				},
 				resolve: (_, args) => { 
 					let findParams = {};
+
+					if(args.id){
+						findParams._id = new RegExp(args.id, 'i');
+					}
 
 					if(args.name) {
 						findParams.name = new RegExp(args.name, 'i');						
@@ -187,7 +198,29 @@ let Schema = (db) => {
 		    companyId: {type: GraphQLString},
 			categoryId: {type: GraphQLString},
 			salesmanId: {type: GraphQLString},			
-			statusId: {type: GraphQLString}
+			statusId: {type: GraphQLString},
+			categoryName: {
+				type: GraphQLString,
+				args: {
+					...connectionArgs
+				},
+				resolve: (obj, args) => {					
+					let findParams = {};
+					findParams.companyId = new RegExp(obj._id, 'i');
+
+					console.log(
+						db.collection('categories').findOne({'name': 'Dining'}).name
+					);
+
+					return connectionArgs( 
+						db.collection('categories')
+							.findOne(findParams).name,
+							args
+						)
+				}
+
+
+			}
 		})
 	});
 

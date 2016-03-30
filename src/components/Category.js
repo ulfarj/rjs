@@ -4,15 +4,15 @@ import {Col, Input} from 'react-bootstrap';
 
 class Category extends React.Component {
 	render() {
-		let {categoryx} = this.props;
+		let {category} = this.props;
 
 		return(
 			<Col>
                <Input
-                key={categoryx.id}                
+                key={category.id}                
                 type="checkbox"
-                label={categoryx.name}
-                value={categoryx.id} 
+                label={category.name}
+                value={category.id} 
                 checked={this.props.checked}
                 //checked={categories.indexOf(category.id) >= 0}
                 onClick={this.props.onClick}  />
@@ -23,7 +23,7 @@ class Category extends React.Component {
 
 Category = Relay.createContainer(Category, {
 	fragments: {
-		categoryx: () => Relay.QL`
+		category: () => Relay.QL`
 			fragment on Category{
 				id,			  
 				name			 		 
