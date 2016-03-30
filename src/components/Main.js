@@ -61,7 +61,7 @@ export default class Main extends React.Component {
     changeCategory = (e) => {      
 
       const { relay } = this.props;
-
+     
       var categories = relay.variables.categories;
 
       var category = {
@@ -71,13 +71,30 @@ export default class Main extends React.Component {
       if(e.target.checked) {
         categories.push(category);
       }
-      else{
-        categories.splice(_.findIndex(categories, category), 1);    
+      else{        
+        categories.splice(_.indexOf(categories, e.target.value), 1);    
       }
 
       relay.setVariables({categories, categories}); 
+    };
 
-      //console.log(categories);   
+    toggleAllCategories = (e) => {
+
+      const { relay, store } = this.props;
+
+      var showAllCategories = !relay.variables.showAllCategories;
+
+      relay.setVariables({showAllCategories: showAllCategories});    
+
+      let categories = [];
+
+      if(showAllCategories){
+         categories = store.categoryConnection.edges.map(edge => {
+          return edge.node.id;
+        });
+      }
+
+      relay.setVariables({categories, categories}); 
     };
 
     editCompany = (companyId) => {   
@@ -85,9 +102,7 @@ export default class Main extends React.Component {
       const { relay } = this.props;         
 
       relay.setVariables({showEditModal: true}); 
-
-      relay.setVariables({editCompanyId: companyId});        
-      //console.log(this.props);
+      relay.setVariables({editCompanyId: companyId});              
     };
 
     onCreateCompany = () => {
@@ -105,18 +120,35 @@ export default class Main extends React.Component {
             <Category 
               key={edge.node.id} 
               category={edge.node} 
-              onClick={this.changeCategory}
+              onClick={e => this.changeCategory(e)}
               checked={relay.variables.categories.indexOf(edge.node.id) >= 0} />
             );
       });
-
+     
+      //console.log(store.statusConnection.edges);
+     
       let companies = store.companyConnection.edges.map(edge => {
-          return (<Company key={edge.node.id} company={edge.node} onClick={this.editCompany} />);
-      });
 
-      /*let sales = store.saleConnection.edges.map(edge => {
-        console.log(edge.node.id);
-      });*/
+          let statuses = edge.node.sales.edges.map(edgex => {
+            
+            var status = _.filter(store.statusConnection.edges, {node: {id: edgex.node.statusId}});
+            var node = status[0].node;
+            return {
+              name: node.name,
+              color: node.color,
+              selected: true
+            }
+          });
+
+          console.log(statuses); 
+
+          return (
+            <Company 
+              key={edge.node.id} 
+              company={edge.node} 
+              onClick={this.editCompany} />
+            );
+      });
       
   		return (
   			<div>
@@ -182,7 +214,7 @@ export default class Main extends React.Component {
                           label='Sýna alla flokka' 
                           value='showall' 
                           checked={relay.variables.showAllCategories} 
-                          onClick={e => this.changeCategory(e)} />
+                          onClick={e => this.toggleAllCategories(e)} />
                       </Col>                      
                       {categories}
                     </Row>
@@ -272,7 +304,14 @@ export default class Main extends React.Component {
         edges{
           node{
             id,                 
-            ${Company.getFragment('company')}
+            ${Company.getFragment('company')},
+            sales(first: 100) {
+              edges{
+                      node{
+                        statusId
+                      }
+                    }
+            } 
           }        
         }
       },
@@ -289,7 +328,8 @@ export default class Main extends React.Component {
         edges{
           node{
             id, 
-            name
+            name,
+            color
           }
         }
       },

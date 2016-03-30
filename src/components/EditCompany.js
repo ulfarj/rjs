@@ -10,22 +10,22 @@ import CreateSaleMutation from '../mutations/CreateSaleMutation';
 class EditCompany extends React.Component {
 
 	componentWillMount(){
-		//const { companyId, relay } = this.props;  
-	    //relay.setVariables({companyId: companyId});
+		const { relay, companyId, store } = this.props;
+	
+	    relay.setVariables({sales: store.saleConnection.edges});
 	}
 
 	createSale() {
 		const { relay, companyId } = this.props;
 
 		var onSuccess = (response) => {      
+		  relay.setVariables({sales: store.saleConnection.edges});
 	      console.log('Mutation sales successful!');
 	    };
 
-	    var onFailure = (transaction) => {
-	      //var error = transaction.getError() || new Error('Mutation failed.');
+	    var onFailure = (transaction) => {	      
 	      console.log(transaction.getError());
 	    };
-
 
 	    Relay.Store.commitUpdate(
 	      new CreateSaleMutation({
@@ -36,13 +36,14 @@ class EditCompany extends React.Component {
 	        store: this.props.store
 	      }), {onSuccess, onFailure}
 	    );
+
 	};
 
 	render() {
 
-		const { store, relay, companyId } = this.props;
+		console.log('render');
 
-		console.log(companyId);
+		const { store, relay, companyId } = this.props;
 
 	    let categories = store.categoryConnection.edges.map(edge => {	    	
 	    	return (
@@ -62,7 +63,7 @@ class EditCompany extends React.Component {
 	      	);
 	    });
 	   
-	    let sales = store.saleConnection.edges.map(edge => {
+	    let sales = relay.variables.sales.map(edge => {
 	    	return (
 	    		<div style={{display: 'flex', flexDirection: 'row', paddingTop: '10px'}}>
 	          		<Input type="select" value={edge.node.salesmanId}>
@@ -201,7 +202,8 @@ class EditCompany extends React.Component {
 
 EditCompany = Relay.createContainer(EditCompany, {
 	initialVariables: {
-		companyId: ''
+		companyId: '',
+		sales: []
 	},
 	fragments: {
 		store: () => Relay.QL`

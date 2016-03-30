@@ -86,9 +86,9 @@ let Schema = (db) => {
 												
 					return connectionFromPromisedArray(
 						db.collection('sales')
-							//.find({categoryId: { $in: args.categories }})
 							.find(findParams)
 							.toArray(),
+							//.find({categoryId: { $in: args.categories }})
 						args
 					)
 				}				
@@ -162,6 +162,23 @@ let Schema = (db) => {
 			email: {type: GraphQLString},
 			comment: {type: GraphQLString},
 			categories: {type: categoryType },
+			/*statuses: {
+				type: saleType,
+				args: {
+					...connectionArgs
+				},
+				resolve: (obj, args) => {					
+					let findParams = {};
+					findParams.companyId = new RegExp(obj._id, 'i');
+
+					return connectionFromPromisedArray( 
+						db.collection('sales')
+							.find(findParams)
+							.toArray(),
+							args
+						)
+				}
+			},*/
 			sales: {
 				type: saleConnection.connectionType,
 				args: {

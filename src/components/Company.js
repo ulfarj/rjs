@@ -12,6 +12,7 @@ class Company extends React.Component {
 
 	render() {
 		let {company} = this.props;
+
 		return(
 			<tr>
 				<td></td>
@@ -46,7 +47,7 @@ Company = Relay.createContainer(Company, {
 				postalCode,
 				phone,
 				email,
-				comment					 			 
+				comment											 			 
 			}	
 		`
 	}
