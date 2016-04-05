@@ -15,7 +15,8 @@ class CreateCompanyMutation extends Relay.Mutation {
 	      postalCode: this.props.postalCode, 
 	      phone: this.props.phone, 
 	      email: this.props.email, 
-	      comment: this.props.comment
+	      comment: this.props.comment,
+	      sales: this.props.sales
 	    }
   	}
 
@@ -28,20 +29,7 @@ class CreateCompanyMutation extends Relay.Mutation {
 	    `;
   	}
 
-  /*	getConfigs() {  		
-	    return [{
-	      type: 'RANGE_ADD',
-	      parentName: 'store',
-	      parentID: this.props.store.id,
-	      connectionName: 'companyConnection',
-	      edgeName: 'companyEdge',
-	      rangeBehaviors: {
-	        'orderby(newest)': 'append',	        
-	      },
-	    }]
-	}*/
-
-	 getConfigs() {
+  	 getConfigs() {
 	    return [{
 	     type: 'REQUIRED_CHILDREN',
 		 children: [
@@ -64,7 +52,8 @@ class CreateCompanyMutation extends Relay.Mutation {
 	          postalCode: this.props.postalCode, 
 	          phone: this.props.phone, 
 	          email: this.props.email, 
-	          comment: this.props.comment
+	          comment: this.props.comment,
+	          sales: this.props.sales
 	        }
 	      }
 	    }

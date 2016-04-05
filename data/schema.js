@@ -104,7 +104,11 @@ let Schema = (db) => {
 					phone: { type: GraphQLString },
 					address: { type: GraphQLString },
 					postalCode: { type: GraphQLString },
-					comment: { type: GraphQLString },					
+					comment: { type: GraphQLString },
+					bleh: { type: GraphQLString },
+					categories: { type: new GraphQLList(GraphQLString) },
+					salesmen: { type: new GraphQLList(GraphQLString) },					
+					statuses: { type: new GraphQLList(GraphQLString) }					
 				},
 				resolve: (_, args) => { 
 					let findParams = {};
@@ -134,10 +138,18 @@ let Schema = (db) => {
 					if(args.comment) {
 						findParams.comment = new RegExp(args.comment, 'i');
 					}
-					
+					if(args.categories) {						
+						findParams.sales = { $elemMatch: { categoryId: {$in: args.categories}}};
+
+						console.log(args.categories);																		
+					}
+
+					//db.companies.find({ sales: { $elemMatch: { categoryId: {$in: ["56aceb38f7ec61807b2fdfde"]}}}})
+
+				
 					return connectionFromPromisedArray( 
 						db.collection('companies')
-							.find(findParams)
+							.find(findParams)							
 							.toArray(),
 						args
 					)
@@ -145,6 +157,15 @@ let Schema = (db) => {
 			}
 		}),
 		interfaces: [nodeDefs.nodeInterface]
+	});
+
+	let ssType = new GraphQLObjectType({
+		name: 'Salexx',
+		fields: () => ({
+			categoryId: {type: GraphQLString},
+			salesmanId: {type: GraphQLString},			
+			statusId: {type: GraphQLString}
+		})
 	});
 
 	let companyType = new GraphQLObjectType({
@@ -162,23 +183,8 @@ let Schema = (db) => {
 			email: {type: GraphQLString},
 			comment: {type: GraphQLString},
 			categories: {type: categoryType },
-			/*statuses: {
-				type: saleType,
-				args: {
-					...connectionArgs
-				},
-				resolve: (obj, args) => {					
-					let findParams = {};
-					findParams.companyId = new RegExp(obj._id, 'i');
-
-					return connectionFromPromisedArray( 
-						db.collection('sales')
-							.find(findParams)
-							.toArray(),
-							args
-						)
-				}
-			},*/
+			sales: {type: new GraphQLList(ssType)}
+			/*
 			sales: {
 				type: saleConnection.connectionType,
 				args: {
@@ -196,7 +202,7 @@ let Schema = (db) => {
 						)
 
 				}
-			}
+			}*/
 		})
 	});	
 
@@ -216,7 +222,7 @@ let Schema = (db) => {
 			categoryId: {type: GraphQLString},
 			salesmanId: {type: GraphQLString},			
 			statusId: {type: GraphQLString},
-			categoryName: {
+			/*categoryName: {
 				type: GraphQLString,
 				args: {
 					...connectionArgs
@@ -236,8 +242,7 @@ let Schema = (db) => {
 						)
 				}
 
-
-			}
+			}*/
 		})
 	});
 
@@ -293,6 +298,15 @@ let Schema = (db) => {
 	let statusConnection = connectionDefinitions({
 		name: 'Status',
 		nodeType: statusType
+	});	
+
+	let salType = new GraphQLInputObjectType({
+		name: 'Sal',
+		fields: () => ({
+			categoryId: {type: GraphQLString},
+			salesmanId: {type: GraphQLString},			
+			statusId: {type: GraphQLString},		
+		})
 	});
 
 	let createCompanyMutation = mutationWithClientMutationId({
@@ -305,7 +319,9 @@ let Schema = (db) => {
 	    	postalCode: { type: GraphQLString },
 	    	phone: { type: GraphQLString },
 	    	email: { type: GraphQLString },
-	    	comment: { type: GraphQLString },	      	
+	    	comment: { type: GraphQLString },
+	    	//sales: {type: GraphQLString}	
+	    	sales: {type: new GraphQLList(salType)}      	
 	    },	   
 		outputFields: {			
 
@@ -318,36 +334,38 @@ let Schema = (db) => {
 		        resolve: () => store
 		      }
 		},
-		mutateAndGetPayload: ({name, ssn, address, postalCode, phone, email, comment}) => {					
-			return db.collection("companies").insertOne({"ssn": ssn, "name": name, "address": address, postalCode, phone, email, comment});
+		mutateAndGetPayload: ({name, ssn, address, postalCode, phone, email, comment, sales}) => {					
+			return db.collection("companies").insertOne({"ssn": ssn, "name": name, "address": address, postalCode, phone, email, comment, sales});
 		}
 	});
+
+	
+/*
+	
 
 	let createSaleMutation = mutationWithClientMutationId({
 		name: 'CreateSale',
 
 		inputFields: {
-			companyId: { type: new GraphQLNonNull(GraphQLString) },
-			salesmanId: { type: new GraphQLNonNull(GraphQLString) },
-			categoryId: { type: new GraphQLNonNull(GraphQLString) },
-			statusId: { type: new GraphQLNonNull(GraphQLString) }
+			companyId: { type: GraphQLString },
+			sales: { type: GraphQLString }
+	        //sales: { type: new GraphQLList(sType) }	    	      	
+	    },	   
+		outputFields: {					
+			sales: {
+				type: new GraphQLList(ssType), 
+				resolve: (payload) => data['Company'][payload.sales]
+			}			
 		},
-		outputFields: {
-			saleEdge: {
-				type: saleConnection.edgeType,
-				resolve: (obj) => ({ node: obj.ops[0], cursor: obj.insertedId })
-			},
-			store: {
-				type: storeType,
-				resolve: () => store
-			}
-		},
-		mutateAndGetPayload: ({companyId, salesmanId, categoryId, statusId}) => {					
-			return db.collection("sales").insertOne(
-				{"companyId": companyId, "salesmanId": salesmanId, "categoryId": categoryId, "statusId": statusId 
-			});
+		mutateAndGetPayload: ({companyId, sales}) => {		
+			 console.log('mutation');			
+
+			 return db.companies.update(
+			   	{ _id: companyId },
+			   	{ $set: { sales: sales }}
+		   	);
 		}
-	});
+	});*/
 
 	let schema = new GraphQLSchema({
 		query: new GraphQLObjectType({
@@ -365,7 +383,7 @@ let Schema = (db) => {
 			name: 'Mutation',
 			fields: () => ({
 				createCompany: createCompanyMutation,
-				createSale: createSaleMutation
+			//	createSale: createSaleMutation
 			})
 		})
 

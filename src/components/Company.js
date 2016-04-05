@@ -4,24 +4,40 @@ import Relay from "react-relay";
 class Company extends React.Component {
 
 	onClick = (companyId) => {
-		//console.log(e.target.attributes.getNamedItem('value'));
-		//console.log(companyId);
-
 		this.props.onClick(companyId);
 	};
 
 	render() {
-		let {company} = this.props;
+		let {company, sales} = this.props;
 
+		let x = 0;
+		let cx = 0;
+		let statuses = sales.map(sale => {
+
+			x = x + 15;
+			if(sale.selected)
+			{
+				return (
+					<rect width="12" height="12" x={x} y="3" stroke="black" strokeWidth="1" fill={sale.color}>
+						<title>{sale.category} - {sale.salesman} - {sale.status}</title>
+					</rect>
+					);
+			}
+						
+			cx = cx + 15;										
+			return (
+				<circle cx={cx} cy="8" r="6" stroke="black" strokeWidth="1" fill={sale.color}>
+					<title>{sale.category} - {sale.salesman} - {sale.status}</title>
+				</circle>
+			);
+		});
+	
 		return(
 			<tr>
 				<td></td>
-				<td>
-					<svg width="100" height="16">
-					 	<circle cx="10" cy="8" r="6" stroke="black" strokeWidth="1" fill="yellow"><title>Vinnsla</title></circle>
-					 	<circle cx="25" cy="8" r="6" stroke="black" strokeWidth="1" fill="red"><title>Nei</title></circle>
-					 	<circle cx="40" cy="8" r="6" stroke="black" strokeWidth="1" fill="blue"><title>Já</title></circle>
-					 	<circle cx="55" cy="8" r="6" stroke="black" strokeWidth="1" fill="green"><title>Athuga</title></circle>
+				<td>					 
+					<svg width="100" height="16">					
+						{statuses}
 					</svg> 					
 				</td>
 				<td onClick={e => this.onClick(company.id)}>{company.name}</td>

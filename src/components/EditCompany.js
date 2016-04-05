@@ -19,7 +19,7 @@ class EditCompany extends React.Component {
 		const { relay, companyId } = this.props;
 
 		var onSuccess = (response) => {      
-		  relay.setVariables({sales: store.saleConnection.edges});
+		  //relay.setVariables({sales: store.saleConnection.edges});
 	      console.log('Mutation sales successful!');
 	    };
 
@@ -40,9 +40,7 @@ class EditCompany extends React.Component {
 	};
 
 	render() {
-
-		console.log('render');
-
+		
 		const { store, relay, companyId } = this.props;
 
 	    let categories = store.categoryConnection.edges.map(edge => {	    	

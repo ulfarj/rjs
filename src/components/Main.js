@@ -64,18 +64,16 @@ export default class Main extends React.Component {
      
       var categories = relay.variables.categories;
 
-      var category = {
-        'categoryId': e.target.value,              
-      };
-
       if(e.target.checked) {
-        categories.push(category);
+        categories.push(e.target.value);
       }
       else{        
         categories.splice(_.indexOf(categories, e.target.value), 1);    
       }
 
-      relay.setVariables({categories, categories}); 
+      relay.setVariables({categories, categories});
+
+      console.log('set variables'); 
     };
 
     toggleAllCategories = (e) => {
@@ -124,30 +122,33 @@ export default class Main extends React.Component {
               checked={relay.variables.categories.indexOf(edge.node.id) >= 0} />
             );
       });
-     
-      //console.log(store.statusConnection.edges);
-     
+      
+
       let companies = store.companyConnection.edges.map(edge => {
 
-          let statuses = edge.node.sales.edges.map(edgex => {
+          let sales = edge.node.sales.map(sale => {
+                                     
+            var status = _.filter(store.statusConnection.edges, {node: {id: sale.statusId}});
+            var category = _.filter(store.categoryConnection.edges, {node: {id: sale.categoryId}});
+            var salesman = _.filter(store.salesmanConnection.edges, {node: {id: sale.salesmanId}});
             
-            var status = _.filter(store.statusConnection.edges, {node: {id: edgex.node.statusId}});
-            var node = status[0].node;
             return {
-              name: node.name,
-              color: node.color,
-              selected: true
+              status: status[0].node.name,
+              color: status[0].node.color,              
+              selected: _.indexOf(relay.variables.categories, sale.categoryId) > -1,
+              category: category[0].node.name,
+              salesman: salesman[0].node.name
             }
           });
-
-          console.log(statuses); 
 
           return (
             <Company 
               key={edge.node.id} 
-              company={edge.node} 
+              company={edge.node}
+              sales={sales} 
               onClick={this.editCompany} />
             );
+
       });
       
   		return (
@@ -294,24 +295,23 @@ export default class Main extends React.Component {
       categoryConnection(first: $limit) {
         edges{
           node{
-            id,            
+            id,
+            name,            
             ${Category.getFragment('category')},          
           }
         }
       },
       companyConnection(first: $limit, name: $name, ssn: $ssn, email: $email, phone: $phone, 
-        address: $address, postalCode: $postalCode, comment: $comment) {
+        address: $address, postalCode: $postalCode, comment: $comment, categories: $categories) {
         edges{
           node{
             id,                 
             ${Company.getFragment('company')},
-            sales(first: 100) {
-              edges{
-                      node{
-                        statusId
-                      }
-                    }
-            } 
+            sales {
+              categoryId
+              salesmanId
+              statusId
+            }             
           }        
         }
       },

@@ -1,4 +1,4 @@
-import Relay from 'react-relay';
+/*import Relay from 'react-relay';
 
 class CreateSaleMutation extends Relay.Mutation {
 	getMutation() {		
@@ -10,17 +10,14 @@ class CreateSaleMutation extends Relay.Mutation {
 	getVariables() {					
 	    return {
 	      companyId: this.props.companyId,
-		  salesmanId: this.props.salesmanId,
-		  categoryId: this.props.categoryId,
-		  statusId: this.props.statusId
+	      sales: this.props.sales		
 	    }
   	}
 
   	getFatQuery() {  		
 	    return Relay.QL`
 	      fragment on CreateSalePayload {
-	        saleEdge,
-	        store { saleConnection }
+	      	sales    
 	      }
 	    `;
   	}
@@ -31,26 +28,24 @@ class CreateSaleMutation extends Relay.Mutation {
 		 children: [
 		    Relay.QL`
 		      fragment on CreateSalePayload {
-		   	    saleEdge
+		   	  	sales
 		      }
 		    `
 		  ]
 	    }];
 	 }
 
+
   	getOptimisticResponse() {  		
 	    return {
-	      saleEdge: {
-	        node: {
-	          companyId: this.props.companyId,
-			  salesmanId: this.props.salesmanId,
-			  categoryId: this.props.categoryId,
-			  statusId: this.props.statusId
-	        }
+	      sales: {	        	      	
+			salesmanId: this.props.salesmanId,
+			categoryId: this.props.categoryId,
+			statusId: this.props.statusId	        
 	      }
 	    }
   	}
 
 }
 
-export default CreateSaleMutation;
+export default CreateSaleMutation;*/
