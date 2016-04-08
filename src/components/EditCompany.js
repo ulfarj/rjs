@@ -11,8 +11,10 @@ class EditCompany extends React.Component {
 
 	componentWillMount(){
 		const { relay, companyId, store } = this.props;
+
+		//console.log(store.companyConnection.edges[0].node);
 	
-	    relay.setVariables({sales: store.saleConnection.edges});
+	    relay.setVariables({sales: store.companyConnection.edges[0].node.sales});
 	}
 
 	createSale() {
@@ -60,17 +62,18 @@ class EditCompany extends React.Component {
 	      		<option key={edge.node.id} value={edge.node.id}>{edge.node.name}</option>
 	      	);
 	    });
-	   
-	    let sales = relay.variables.sales.map(edge => {
+	   	    
+
+	    let sales = relay.variables.sales.map(sale => {
 	    	return (
 	    		<div style={{display: 'flex', flexDirection: 'row', paddingTop: '10px'}}>
-	          		<Input type="select" value={edge.node.salesmanId}>
+	          		<Input type="select" value={sale.salesmanId}>
 			      		{salesmen}
 			      	</Input>
-		          	<Input type="select" value={edge.node.categoryId}>
+		          	<Input type="select" value={sale.categoryId}>
 			      		{categories}
 			      	</Input>
-			      	<Input type="select" value={edge.node.statusId}>
+			      	<Input type="select" value={sale.statusId}>
 			      		{statuses}
 			      	</Input>	
 		      	</div>
@@ -201,7 +204,8 @@ class EditCompany extends React.Component {
 EditCompany = Relay.createContainer(EditCompany, {
 	initialVariables: {
 		companyId: '',
-		sales: []
+		sales: [],
+		company: {}
 	},
 	fragments: {
 		store: () => Relay.QL`
@@ -234,7 +238,12 @@ EditCompany = Relay.createContainer(EditCompany, {
 			        edges{
 			          node{
 			            id,            		
-			            name			            	            
+			            name
+			            sales {
+			              categoryId
+			              salesmanId
+			              statusId
+			            }			            	            
 			          }        
 			        }
 			      },

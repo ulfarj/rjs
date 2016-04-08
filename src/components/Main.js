@@ -60,7 +60,7 @@ export default class Main extends React.Component {
 
     changeCategory = (e) => {      
 
-      const { relay } = this.props;
+      const { relay, store } = this.props;
      
       var categories = relay.variables.categories;
 
@@ -71,9 +71,11 @@ export default class Main extends React.Component {
         categories.splice(_.indexOf(categories, e.target.value), 1);    
       }
 
+
+      let empt = [];  
+      relay.setVariables({categories, empt});
       relay.setVariables({categories, categories});
 
-      console.log('set variables'); 
     };
 
     toggleAllCategories = (e) => {
@@ -114,16 +116,27 @@ export default class Main extends React.Component {
       const { store, relay } = this.props;
 
       let categories = store.categoryConnection.edges.map(edge => {
-          return (
-            <Category 
+          var category = edge.node;
+          return (           
+            /* <Category 
               key={edge.node.id} 
               category={edge.node} 
               onClick={e => this.changeCategory(e)}
-              checked={relay.variables.categories.indexOf(edge.node.id) >= 0} />
-            );
+              checked={relay.variables.categories.indexOf(edge.node.id) >= 0} />*/
+              <Col>
+               <Input
+                key={category.id}                
+                type="checkbox"
+                label={category.name}
+                value={category.id} 
+                checked={relay.variables.categories.indexOf(edge.node.id) >= 0}
+                //checked={categories.indexOf(category.id) >= 0}
+                onClick={e => this.changeCategory(e)}  />
+             </Col>
+            );                       
       });
-      
 
+          
       let companies = store.companyConnection.edges.map(edge => {
 
           let sales = edge.node.sales.map(sale => {
@@ -153,6 +166,7 @@ export default class Main extends React.Component {
       
   		return (
   			<div>
+
            <div style={styles.headerArea}>
               <div style={{width: 120}}>
                 <Button
@@ -262,7 +276,7 @@ export default class Main extends React.Component {
                       {companies}                  
                   </tbody>
                 </Table>
-              </div>
+              </div>              
         </div>
   		);	
   	}

@@ -140,8 +140,6 @@ let Schema = (db) => {
 					}
 					if(args.categories) {						
 						findParams.sales = { $elemMatch: { categoryId: {$in: args.categories}}};
-
-						console.log(args.categories);																		
 					}
 
 					//db.companies.find({ sales: { $elemMatch: { categoryId: {$in: ["56aceb38f7ec61807b2fdfde"]}}}})

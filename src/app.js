@@ -18,6 +18,7 @@ class HomeRoute extends Relay.Route {
 ReactDOM.render(
 	<Relay.RootContainer
       Component={Main}
+      forceFetch={true}
       route={new HomeRoute()} />, 
 	document.getElementById('app')
 );
